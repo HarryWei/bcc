@@ -19,6 +19,10 @@ add_executable(TCPSendStack TCPSendStack.cc)
 target_link_libraries(TCPSendStack bcc-static)
 install (TARGETS TCPSendStack DESTINATION share/bcc/examples/cpp)
 
+add_executable(IOMigrater IOMigrater.cc)
+target_link_libraries(IOMigrater bcc-static)
+install (TARGETS IOMigrater DESTINATION share/bcc/examples/cpp)
+
 add_executable(RandomRead RandomRead.cc)
 target_link_libraries(RandomRead bcc-static)
 install (TARGETS RandomRead DESTINATION share/bcc/examples/cpp)
