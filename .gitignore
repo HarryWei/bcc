@@ -1,0 +1,12 @@
+# Editor's files
+*.swp
+*.swo
+*.pyc
+.idea
+tags
+
+# Build artifacts
+/build/
+cmake-build-debug
+debian/**/*.log
+obj-x86_64-linux-gnu
