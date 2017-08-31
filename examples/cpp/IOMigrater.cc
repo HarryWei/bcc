@@ -246,7 +246,7 @@ void sig_handler(int signo) {
 
 int main(int argc, char** argv) {
   ebpf::BPF bpf;
-  int ret = 0;
+  //int ret = 0;
   int loop_times = 0;
   auto init_res = bpf.init(BPF_PROGRAM);
   if (init_res.code() != 0) {
@@ -262,22 +262,22 @@ int main(int argc, char** argv) {
  
   auto attach_res1 = bpf.attach_kprobe("blk_account_io_start", "trace_pid_start");
   if (attach_res1.code() != 0) {
-    std::cerr << attach_res.msg() << std::endl;
+    std::cerr << attach_res1.msg() << std::endl;
     return 1;
   }
   auto attach_res2 = bpf.attach_kprobe("blk_start_request", "trace_req_start");
   if (attach_res2.code() != 0) {
-    std::cerr << attach_res.msg() << std::endl;
+    std::cerr << attach_res2.msg() << std::endl;
     return 1;
   }
   auto attach_res3 = bpf.attach_kprobe("blk_mq_start_request", "trace_req_start");
   if (attach_res3.code() != 0) {
-    std::cerr << attach_res.msg() << std::endl;
+    std::cerr << attach_res3.msg() << std::endl;
     return 1;
   }
   auto attach_res4 = bpf.attach_kprobe("blk_account_io_completion", "trace_req_completion");
   if (attach_res4.code() != 0) {
-    std::cerr << attach_res.msg() << std::endl;
+    std::cerr << attach_res4.msg() << std::endl;
     return 1;
   }
   
