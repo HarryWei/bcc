@@ -262,7 +262,7 @@ int main(int argc, char** argv) {
 	  usleep(probe_time);
 	  //printf("It is still trying to find I/O intensive threads...\n");
 	  auto table =
-		  bpf.get_hash_table<struct info_t, uint64_t>("counts").get_table_offline();
+		  bpf.get_hash_table<struct info_t, struct val_t>("counts").get_table_offline();
 #if 0
 	  std::sort(table.begin(), table.end(), [](std::pair<struct info_t, uint64_t> a,
 											   std::pair<struct info_t, uint64_t> b) {
