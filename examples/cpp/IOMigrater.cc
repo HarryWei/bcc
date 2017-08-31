@@ -239,6 +239,7 @@ void sig_handler(int signo) {
 
 int main(int argc, char** argv) {
   int ret = 0;
+  int loop_times = 0;
   auto init_res = bpf.init(BPF_PROGRAM);
   if (init_res.code() != 0) {
     std::cerr << init_res.msg() << std::endl;
@@ -269,10 +270,12 @@ int main(int argc, char** argv) {
 		return a.second < b.second;
 	  });
 #endif
+	  std::cout << "This is " << loop_times << " loop and table.items is " << table.items() << std::endl;
 	  for (auto it : table) {
 		  std::cout << "PID: " << it.first.pid << std::endl;
 	  }
-	  //table.clear();
+	  table.clear();
+	  loop_times += 1;
 #endif
   }
   return 0;
