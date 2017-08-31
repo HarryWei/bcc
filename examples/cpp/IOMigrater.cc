@@ -158,8 +158,6 @@ typedef unsigned long long u64;
 /* Task command name length */
 #define TASK_COMM_LEN 16
 
-ebpf::BPF bpf;
-
 // Define the same struct to use in user space.
 // the key for the output summary
 struct info_t {
@@ -177,6 +175,7 @@ struct val_t {
     u32 io;
 };
 
+/*
 int attach(void) {
   auto attach_res = bpf.attach_kprobe("blk_account_io_start", "trace_pid_start");
   if (attach_res.code() != 0) {
@@ -201,7 +200,9 @@ int attach(void) {
   
   return 0;
 }
+*/
 
+/*
 int detach(void) {
 	auto detach_res = bpf.detach_kprobe("blk_account_io_start");
 	if (detach_res.code() != 0) {
@@ -226,7 +227,9 @@ int detach(void) {
   
   return 0;
 }
+*/
 
+/*
 void sig_handler(int signo) {
 	int ret = 0;
 	if (signo == SIGINT) {
@@ -239,8 +242,10 @@ void sig_handler(int signo) {
 	
 	exit(EXIT_SUCCESS);
 }
+*/
 
 int main(int argc, char** argv) {
+  ebpf::BPF bpf;
   int ret = 0;
   int loop_times = 0;
   auto init_res = bpf.init(BPF_PROGRAM);
@@ -249,13 +254,34 @@ int main(int argc, char** argv) {
     return 1;
   }
   
-  if (signal(SIGINT, sig_handler) == SIG_ERR) {
-	handle_error("SIGINT error!\n");
+//  if (signal(SIGINT, sig_handler) == SIG_ERR) {
+//	handle_error("SIGINT error!\n");
+//  }
+ // ret = attach(&bpf);
+ // if (ret != 0) handle_error("Attach Kprobe Error!\n");
+ 
+  auto attach_res1 = bpf.attach_kprobe("blk_account_io_start", "trace_pid_start");
+  if (attach_res1.code() != 0) {
+    std::cerr << attach_res.msg() << std::endl;
+    return 1;
   }
-  ret = attach();
-  if (ret != 0) handle_error("Attach Kprobe Error!\n");
+  auto attach_res2 = bpf.attach_kprobe("blk_start_request", "trace_req_start");
+  if (attach_res2.code() != 0) {
+    std::cerr << attach_res.msg() << std::endl;
+    return 1;
+  }
+  auto attach_res3 = bpf.attach_kprobe("blk_mq_start_request", "trace_req_start");
+  if (attach_res3.code() != 0) {
+    std::cerr << attach_res.msg() << std::endl;
+    return 1;
+  }
+  auto attach_res4 = bpf.attach_kprobe("blk_account_io_completion", "trace_req_completion");
+  if (attach_res4.code() != 0) {
+    std::cerr << attach_res.msg() << std::endl;
+    return 1;
+  }
   
-  int probe_time = 10000;  // 10 milliseconds in default
+  int probe_time = 100000;  // 10 milliseconds in default
   if (argc == 2) {
     probe_time = atoi(argv[1]);
   }
