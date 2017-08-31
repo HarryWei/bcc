@@ -263,11 +263,12 @@ int main(int argc, char** argv) {
 #if 1
 	  auto table =
 		  bpf.get_hash_table<struct info_t, struct val_t>("counts").get_table_offline();
+#if 0
 	  std::sort(table.begin(), table.end(), [](std::pair<struct info_t, struct val_t> a,
 											   std::pair<struct info_t, struct val_t> b) {
 		return a.second < b.second;
 	  });
-
+#endif
 	  for (auto it : table) {
 		  std::cout << "PID: " << it.first[0].pid; << std::endl;
 	  }
