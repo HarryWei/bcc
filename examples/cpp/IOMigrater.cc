@@ -274,7 +274,7 @@ int main(int argc, char** argv) {
 	  //}
 #endif
 	  std::cout << "This is " << loop_times << " loop and size is " << table.size() << std::endl;
-	  table.clear();
+	  //table.clear();
 	  loop_times += 1;
   }
   return 0;
