@@ -261,7 +261,6 @@ int main(int argc, char** argv) {
   while (1) {
 	  usleep(probe_time);
 	  //printf("It is still trying to find I/O intensive threads...\n");
-#if 1
 	  auto table =
 		  bpf.get_hash_table<struct info_t, uint64_t>("counts").get_table_offline();
 #if 0
