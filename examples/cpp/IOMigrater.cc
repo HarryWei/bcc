@@ -255,11 +255,11 @@ int main(int argc, char** argv) {
   if (argc == 2) {
     probe_time = atoi(argv[1]);
   }
-  std::cout << "Filering I/O intensive threads for " << probe_time << " milliseconds" << std::endl;
+  std::cout << "Filering I/O intensive threads for " << probe_time << " microseconds" << std::endl;
 
   while (1) {
 	  usleep(probe_time);
-	  printf("It is still trying to find I/O intensive threads...\n");
+	  //printf("It is still trying to find I/O intensive threads...\n");
 #if 1
 	  auto table =
 		  bpf.get_hash_table<struct info_t, uint64_t>("counts").get_table_offline();
@@ -272,7 +272,7 @@ int main(int argc, char** argv) {
 	  for (auto it : table) {
 		  std::cout << "PID: " << it.first.pid << std::endl;
 	  }
-	  table.clear();
+	  //table.clear();
 #endif
   }
   return 0;
