@@ -233,7 +233,7 @@ int detach(void) {
 void sig_handler(int signo) {
 	int ret = 0;
 	if (signo == SIGINT) {
-		printf("Detaching and free resources...");
+		printf("Detaching and free resources...\n");
 		ret = detach();
 		if (ret != 0) handle_error("Detaching Kprobe Error!\n");
 	} else {
