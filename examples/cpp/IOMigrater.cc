@@ -39,11 +39,6 @@
 #include "glib-2.0/glib.h"
 #include "BPF.h"
 
-#define handle_error(msg) \
-	do { perror(msg); exit(EXIT_FAILURE); } while (0)
-/* Task command name length */
-#define TASK_COMM_LEN 16
-
 const std::string BPF_PROGRAM = R"(
 #include <uapi/linux/ptrace.h>
 #include <linux/blkdev.h>
@@ -155,10 +150,20 @@ int trace_req_completion(struct pt_regs *ctx, struct request *req)
 }
 )";
 
+typedef unsigned int u32;
+typedef unsigned long long u64;
+
+#define handle_error(msg) \
+	do { perror(msg); exit(EXIT_FAILURE); } while (0)
+/* Task command name length */
+#define TASK_COMM_LEN 16
+
+ebpf::BPF bpf;
+
 // Define the same struct to use in user space.
 // the key for the output summary
 struct info_t {
-    uint32_t pid;
+    u32 pid;
     int rwflag;
     int major;
     int minor;
@@ -167,12 +172,10 @@ struct info_t {
 
 // the value of the output summary
 struct val_t {
-    uint64_t bytes;
-    uint64_t ns; //changed by Weiwei Jia
-    uint32_t io;
+    u64 bytes;
+    u64 ns; //changed by Weiwei Jia
+    u32 io;
 };
-
-ebpf::BPF bpf;
 
 int attach(void) {
   auto attach_res = bpf.attach_kprobe("blk_account_io_start", "trace_pid_start");
@@ -274,7 +277,7 @@ int main(int argc, char** argv) {
 	  //}
 #endif
 	  std::cout << "This is " << loop_times << " loop and size is " << table.size() << std::endl;
-	  counts.clear();
+	  table.clear();
 	  loop_times += 1;
   }
   return 0;
