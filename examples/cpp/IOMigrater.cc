@@ -35,7 +35,7 @@
 #include <sys/shm.h>
 #include <sys/ipc.h
 
-#include "debug.h"
+//#include "debug.h"
 #include "glib-2.0/glib.h"
 #include "BPF.h"
 
