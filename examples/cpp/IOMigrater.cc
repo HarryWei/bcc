@@ -156,12 +156,6 @@ int trace_req_completion(struct pt_regs *ctx, struct request *req)
 )";
 
 // Define the same struct to use in user space.
-// for saving process info by request
-struct who_t {
-    uint32_t pid;
-    char name[TASK_COMM_LEN];
-};
-
 // the key for the output summary
 struct info_t {
     uint32_t pid;
@@ -266,34 +260,18 @@ int main(int argc, char** argv) {
   while (1) {
 	  usleep(probe_time);
 	  printf("It is still trying to find I/O intensive threads...\n");
-#if 0
+#if 1
 	  auto table =
-		  bpf.get_hash_table<stack_key_t, uint64_t>("counts").get_table_offline();
-	  std::sort(table.begin(), table.end(), [](std::pair<stack_key_t, uint64_t> a,
-											   std::pair<stack_key_t, uint64_t> b) {
+		  bpf.get_hash_table<struct info_t, struct val_t>("counts").get_table_offline();
+	  std::sort(table.begin(), table.end(), [](std::pair<struct info_t, struct val_t> a,
+											   std::pair<struct info_t, struct val_t> b) {
 		return a.second < b.second;
 	  });
-	  auto stacks = bpf.get_stack_table("stack_traces");
 
 	  for (auto it : table) {
-		std::cout << "PID: " << it.first.pid << " (" << it.first.name << ") "
-				  << "made " << it.second
-				  << " TCP sends on following stack: " << std::endl;
-		std::cout << "  Kernel Stack:" << std::endl;
-		if (it.first.kernel_stack >= 0) {
-		  auto syms = stacks.get_stack_symbol(it.first.kernel_stack, -1);
-		  for (auto sym : syms)
-			std::cout << "    " << sym << std::endl;
-		} else
-		  std::cout << "    " << it.first.kernel_stack << std::endl;
-		std::cout << "  User Stack:" << std::endl;
-		if (it.first.user_stack >= 0) {
-		  auto syms = stacks.get_stack_symbol(it.first.user_stack, it.first.pid);
-		  for (auto sym : syms)
-			std::cout << "    " << sym << std::endl;
-		} else
-		  std::cout << "    " << it.first.user_stack << std::endl;
+		  std::cout << "PID: " << it.first[0].pid; << std::endl;
 	  }
+	  table.clear();
 #endif
   }
   return 0;
