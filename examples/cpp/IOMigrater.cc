@@ -33,7 +33,7 @@
 #include <semaphore.h>
 #include <signal.h>
 #include <sys/shm.h>
-#include <sys/ipc.h
+#include <sys/ipc.h>
 
 //#include "debug.h"
 #include "glib-2.0/glib.h"
@@ -156,13 +156,13 @@ int trace_req_completion(struct pt_regs *ctx, struct request *req)
 // Define the same struct to use in user space.
 // for saving process info by request
 struct who_t {
-    u32 pid;
+    uint32_t pid;
     char name[TASK_COMM_LEN];
 };
 
 // the key for the output summary
 struct info_t {
-    u32 pid;
+    uint32_t pid;
     int rwflag;
     int major;
     int minor;
@@ -171,12 +171,12 @@ struct info_t {
 
 // the value of the output summary
 struct val_t {
-    u64 bytes;
-    u64 ns; //changed by Weiwei Jia
-    u32 io;
+    uint64_t bytes;
+    uint64_t ns; //changed by Weiwei Jia
+    uint32_t io;
 };
 
-void attach(void) {
+int attach(void) {
   auto attach_res = bpf.attach_kprobe("blk_account_io_start", "trace_pid_start");
   if (attach_res.code() != 0) {
     std::cerr << attach_res.msg() << std::endl;
@@ -198,10 +198,10 @@ void attach(void) {
     return 1;
   }
   
-  return ;
+  return 0;
 }
 
-void detach(void) {
+int detach(void) {
 	auto detach_res = bpf.detach_kprobe("blk_account_io_start");
 	if (detach_res.code() != 0) {
 		std::cerr << detach_res.msg() << std::endl;
@@ -223,13 +223,15 @@ void detach(void) {
 		return 1;
 	}
   
-  return ;
+  return 0;
 }
 
 void sig_handler(int signo) {
+	int ret = 0;
 	if (signo == SIGINT) {
 		printf("Detaching and free resources...");
-		detach();
+		ret = detach();
+		if (ret != 0) handle_error("Detaching Kprobe Error!\n");
 	} else {
 		handle_error("Signal Error!\n");
 	}
@@ -238,6 +240,7 @@ void sig_handler(int signo) {
 }
 
 int main(int argc, char** argv) {
+  int ret = 0;
   ebpf::BPF bpf;
   auto init_res = bpf.init(BPF_PROGRAM);
   if (init_res.code() != 0) {
@@ -248,7 +251,8 @@ int main(int argc, char** argv) {
   if (signal(SIGINT, sig_handler) == SIG_ERR) {
 	handle_error("SIGINT error!\n");
   }
-  attach();
+  ret = attach();
+  if (ret != 0) handle_error("Attach Kprobe Error!\n");
   
   int probe_time = 10;  // 10 milliseconds in default
   if (argc == 2) {
