@@ -270,7 +270,7 @@ int main(int argc, char** argv) {
 		return a.second < b.second;
 	  });
 #endif
-	  std::cout << "This is " << loop_times << " loop and table.items is " << table.items() << std::endl;
+	  std::cout << "This is " << loop_times << " loop and addr of table is %p" << &table << std::endl;
 	  for (auto it : table) {
 		  std::cout << "PID: " << it.first.pid << std::endl;
 	  }
