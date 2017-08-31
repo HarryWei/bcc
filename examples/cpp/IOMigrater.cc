@@ -292,17 +292,17 @@ int main(int argc, char** argv) {
 	  //printf("It is still trying to find I/O intensive threads...\n");
 	  auto table =
 		  bpf.get_hash_table<struct info_t, struct val_t>("counts").get_table_offline();
-#if 0
-	  std::sort(table.begin(), table.end(), [](std::pair<struct info_t, uint64_t> a,
-											   std::pair<struct info_t, uint64_t> b) {
-		//return a.second < b.second;
+#if 1
+	  std::sort(table.begin(), table.end(), [](std::pair<struct info_t, struct val_t> a,
+											   std::pair<struct info_t, struct val_t> b) {
+		return a.second.ns < b.second.ns;
 	  });
 	  
-	  //for (auto it : table) {
+	  for (auto it : table) {
 		  std::cout << "PID: " << table.first.pid << std::endl;
-	  //}
+	  }
 #endif
-	  std::cout << "This is " << loop_times << " loop and size is " << table.size() << std::endl;
+	  //std::cout << "This is " << loop_times << " loop and size is " << table.size() << std::endl;
 	  table.clear();
 	  loop_times += 1;
   }
