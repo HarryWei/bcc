@@ -41,6 +41,8 @@
 
 #define handle_error(msg) \
 	do { perror(msg); exit(EXIT_FAILURE); } while (0)
+/* Task command name length */
+#define TASK_COMM_LEN 16
 
 const std::string BPF_PROGRAM = R"(
 #include <uapi/linux/ptrace.h>
@@ -176,6 +178,8 @@ struct val_t {
     uint32_t io;
 };
 
+ebpf::BPF bpf;
+
 int attach(void) {
   auto attach_res = bpf.attach_kprobe("blk_account_io_start", "trace_pid_start");
   if (attach_res.code() != 0) {
@@ -241,7 +245,6 @@ void sig_handler(int signo) {
 
 int main(int argc, char** argv) {
   int ret = 0;
-  ebpf::BPF bpf;
   auto init_res = bpf.init(BPF_PROGRAM);
   if (init_res.code() != 0) {
     std::cerr << init_res.msg() << std::endl;
