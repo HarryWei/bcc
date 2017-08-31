@@ -267,13 +267,13 @@ int main(int argc, char** argv) {
 #if 1
 	  std::sort(table.begin(), table.end(), [](std::pair<struct info_t, uint64_t> a,
 											   std::pair<struct info_t, uint64_t> b) {
-		return a.second < b.second;
+		//return a.second < b.second;
 	  });
 #endif
-	  std::cout << "This is " << loop_times << " loop and addr of table is %p" << &table << std::endl;
-	  for (auto it : table) {
-		  std::cout << "PID: " << it.first.pid << std::endl;
-	  }
+	  std::cout << "This is " << loop_times << " loop and addr of table is " << &table << std::endl;
+	  //for (auto it : table) {
+		  std::cout << "PID: " << table.first.pid << std::endl;
+	  //}
 	  table.clear();
 	  loop_times += 1;
 #endif
