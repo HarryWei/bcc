@@ -299,7 +299,7 @@ int main(int argc, char** argv) {
 	  });
 	  
 	  for (auto it : table) {
-		  std::cout << "PID: " << table.first.pid << std::endl;
+		  std::cout << "PID: " << it.first.pid << " handle I/O for " << it.second.ns << " ns" << std::endl;
 	  }
 #endif
 	  //std::cout << "This is " << loop_times << " loop and size is " << table.size() << std::endl;
