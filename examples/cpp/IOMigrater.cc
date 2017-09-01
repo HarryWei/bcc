@@ -43,11 +43,13 @@ const std::string BPF_PROGRAM = R"(
 #include <uapi/linux/ptrace.h>
 #include <linux/blkdev.h>
 
+// for saving process info by request
 struct who_t {
     u32 pid;
     char name[TASK_COMM_LEN];
 };
 
+// the key for the output summary
 struct info_t {
     u32 pid;
     int rwflag;
@@ -56,9 +58,10 @@ struct info_t {
     char name[TASK_COMM_LEN];
 };
 
+// the value of the output summary
 struct val_t {
     u64 bytes;
-    u64 ns;
+    u64 ns; //changed by Weiwei Jia
     u32 io;
 };
 
@@ -66,6 +69,7 @@ BPF_HASH(start, struct request *);
 BPF_HASH(whobyreq, struct request *, struct who_t);
 BPF_HASH(counts, struct info_t, struct val_t);
 
+// cache PID and comm by-req
 int trace_pid_start(struct pt_regs *ctx, struct request *req)
 {
     struct who_t who = {};
@@ -78,6 +82,7 @@ int trace_pid_start(struct pt_regs *ctx, struct request *req)
     return 0;
 }
 
+// time block I/O
 int trace_req_start(struct pt_regs *ctx, struct request *req)
 {
     u64 ts;
@@ -88,23 +93,32 @@ int trace_req_start(struct pt_regs *ctx, struct request *req)
     return 0;
 }
 
+// output
 int trace_req_completion(struct pt_regs *ctx, struct request *req)
 {
     u64 *tsp;
 
+    // fetch timestamp and calculate delta
     tsp = start.lookup(&req);
     if (tsp == 0) {
-        return 0;
+        return 0;    // missed tracing issue
     }
 
     struct who_t *whop;
     struct val_t *valp, zero = {};
     u64 delta_ns = bpf_ktime_get_ns() - *tsp;
 
+    // setup info_t key
     struct info_t info = {};
     info.major = req->rq_disk->major;
     info.minor = req->rq_disk->first_minor;
-
+/*
+ * The following deals with a kernel version change (in mainline 4.7, although
+ * it may be backported to earlier kernels) with how block request write flags
+ * are tested. We handle both pre- and post-change versions here. Please avoid
+ * kernel version tests like this as much as possible: they inflate the code,
+ * test, and maintenance burden.
+ */
 #ifdef REQ_WRITE
     info.rwflag = !!(req->cmd_flags & REQ_WRITE);
 #elif defined(REQ_OP_SHIFT)
@@ -115,6 +129,7 @@ int trace_req_completion(struct pt_regs *ctx, struct request *req)
 
     whop = whobyreq.lookup(&req);
     if (whop == 0) {
+        // missed pid who, save stats as pid 0
         valp = counts.lookup_or_init(&info, &zero);
     } else {
         info.pid = whop->pid;
@@ -122,6 +137,8 @@ int trace_req_completion(struct pt_regs *ctx, struct request *req)
         valp = counts.lookup_or_init(&info, &zero);
     }
 
+    // save stats
+    //bpf_trace_printk("%lu\\n", valp->us);
     valp->ns += delta_ns;
     valp->bytes += req->__data_len;
     valp->io++;
@@ -141,6 +158,8 @@ typedef unsigned long long u64;
 /* Task command name length */
 #define TASK_COMM_LEN 16
 
+ebpf::BPF bpf;
+
 // Define the same struct to use in user space.
 // the key for the output summary
 struct info_t {
@@ -158,7 +177,6 @@ struct val_t {
     u32 io;
 };
 
-/*
 int attach(void) {
   auto attach_res = bpf.attach_kprobe("blk_account_io_start", "trace_pid_start");
   if (attach_res.code() != 0) {
@@ -183,9 +201,7 @@ int attach(void) {
   
   return 0;
 }
-*/
 
-/*
 int detach(void) {
 	auto detach_res = bpf.detach_kprobe("blk_account_io_start");
 	if (detach_res.code() != 0) {
@@ -210,9 +226,7 @@ int detach(void) {
   
   return 0;
 }
-*/
 
-/*
 void sig_handler(int signo) {
 	int ret = 0;
 	if (signo == SIGINT) {
@@ -225,11 +239,9 @@ void sig_handler(int signo) {
 	
 	exit(EXIT_SUCCESS);
 }
-*/
 
 int main(int argc, char** argv) {
-  ebpf::BPF bpf;
-  //int ret = 0;
+  int ret = 0;
   int loop_times = 0;
   auto init_res = bpf.init(BPF_PROGRAM);
   if (init_res.code() != 0) {
@@ -237,34 +249,13 @@ int main(int argc, char** argv) {
     return 1;
   }
   
-//  if (signal(SIGINT, sig_handler) == SIG_ERR) {
-//	handle_error("SIGINT error!\n");
-//  }
- // ret = attach(&bpf);
- // if (ret != 0) handle_error("Attach Kprobe Error!\n");
- 
-  auto attach_res1 = bpf.attach_kprobe("blk_account_io_start", "trace_pid_start");
-  if (attach_res1.code() != 0) {
-    std::cerr << attach_res1.msg() << std::endl;
-    return 1;
+  if (signal(SIGINT, sig_handler) == SIG_ERR) {
+	handle_error("SIGINT error!\n");
   }
-  auto attach_res2 = bpf.attach_kprobe("blk_start_request", "trace_req_start");
-  if (attach_res2.code() != 0) {
-    std::cerr << attach_res2.msg() << std::endl;
-    return 1;
-  }
-  auto attach_res3 = bpf.attach_kprobe("blk_mq_start_request", "trace_req_start");
-  if (attach_res3.code() != 0) {
-    std::cerr << attach_res3.msg() << std::endl;
-    return 1;
-  }
-  auto attach_res4 = bpf.attach_kprobe("blk_account_io_completion", "trace_req_completion");
-  if (attach_res4.code() != 0) {
-    std::cerr << attach_res4.msg() << std::endl;
-    return 1;
-  }
+  ret = attach();
+  if (ret != 0) handle_error("Attach Kprobe Error!\n");
   
-  int probe_time = 100000;  // 10 milliseconds in default
+  int probe_time = 10000;  // 10 milliseconds in default
   if (argc == 2) {
     probe_time = atoi(argv[1]);
   }
@@ -278,14 +269,14 @@ int main(int argc, char** argv) {
 #if 1
 	  std::sort(table.begin(), table.end(), [](std::pair<struct info_t, struct val_t> a,
 											   std::pair<struct info_t, struct val_t> b) {
-		return a.second.ns < b.second.ns;
+		return a.second.bytes < b.second.bytes;
 	  });
 	  
 	  for (auto it : table) {
-		  std::cout << "PID: " << it.first.pid << " handle I/O for " << it.second.ns << " ns" << std::endl;
+		  std::cout << "PID " << it.first.pid << " handles I/O for " << it.second.ns << " nanoseconds." << std::endl;
 	  }
 #endif
-	  //std::cout << "This is " << loop_times << " loop and size is " << table.size() << std::endl;
+	  std::cout << "This is " << loop_times << " loop and size is " << table.size() << std::endl;
 	  table.clear();
 	  loop_times += 1;
   }
