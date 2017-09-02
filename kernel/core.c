@@ -92,25 +92,135 @@
 
 //added by Weiwei Jia
 #include <linux/time.h>
-int enable_flag = 0;
-module_param(enable_flag, int, 0664);
-EXPORT_SYMBOL_GPL(enable_flag);
+//in VM1, vCPU2 - vCPU10 are shared pCPU2-pCPU10
+//resources with VM2 so export their information for guest use.
+int enable_vm1_flag = 0;
+module_param(enable_vm1_flag, int, 0664);
+EXPORT_SYMBOL_GPL(enable_vm1_flag);
+int enable_vm1_debug = 0;
+module_param(enable_vm1_debug, int, 0664);
+EXPORT_SYMBOL_GPL(enable_vm1_debug);
 
-int enable_tick1 = 0;
-module_param(enable_tick1, int, 0664);
-EXPORT_SYMBOL_GPL(enable_tick1);
+//vCPU PID in host OS
+int vm1_vcpu2_pid = 0;
+module_param(vm1_vcpu2_pid, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu2_pid);
+//The timestamp when this vCPU is scheduled on pCPU
+int vm1_vcpu2_curr_ts = 0;
+module_param(vm1_vcpu2_curr_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu2_curr_ts);
+//The last timeslice of this vCPU
+int vm1_vcpu2_ts = 0;
+module_param(vm1_vcpu2_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu2_ts);
+//Flag of whether this vCPU is on pCPU
+int vm1_is_vcpu2_on = 0;
+module_param(vm1_is_vcpu2_on, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_is_vcpu2_on);
 
-int enable_tick2 = 0;
-module_param(enable_tick2, int, 0664);
-EXPORT_SYMBOL_GPL(enable_tick2);
+int vm1_vcpu3_pid = 0;
+module_param(vm1_vcpu3_pid, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu3_pid);
+int vm1_vcpu3_curr_ts = 0;
+module_param(vm1_vcpu3_curr_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu3_curr_ts);
+int vm1_vcpu3_ts = 0;
+module_param(vm1_vcpu3_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu3_ts);
+int vm1_is_vcpu3_on = 0;
+module_param(vm1_is_vcpu3_on, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_is_vcpu3_on);
 
-int enable_debug = 0;
-module_param(enable_debug, int, 0664);
-EXPORT_SYMBOL_GPL(enable_debug);
+int vm1_vcpu4_pid = 0;
+module_param(vm1_vcpu4_pid, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu4_pid);
+int vm1_vcpu4_ts = 0;
+module_param(vm1_vcpu4_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu4_ts);
+int vm1_is_vcpu4_on = 0;
+module_param(vm1_is_vcpu4_on, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_is_vcpu4_on);
+int vm1_vcpu4_curr_ts = 0;
+module_param(vm1_vcpu4_curr_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu4_curr_ts);
 
-int enable_pid = 0;
-module_param(enable_pid, int, 0664);
-EXPORT_SYMBOL_GPL(enable_pid);
+int vm1_vcpu5_pid = 0;
+module_param(vm1_vcpu5_pid, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu5_pid);
+int vm1_vcpu5_ts = 0;
+module_param(vm1_vcpu5_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu2_ts);
+int vm1_is_vcpu5_on = 0;
+module_param(vm1_is_vcpu5_on, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_is_vcpu5_on);
+int vm1_vcpu5_curr_ts = 0;
+module_param(vm1_vcpu5_curr_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu5_curr_ts);
+
+int vm1_vcpu6_pid = 0;
+module_param(vm1_vcpu6_pid, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu6_pid);
+int vm1_vcpu6_ts = 0;
+module_param(vm1_vcpu6_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu6_ts);
+int vm1_is_vcpu6_on = 0;
+module_param(vm1_is_vcpu6_on, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_is_vcpu6_on);
+int vm1_vcpu6_curr_ts = 0;
+module_param(vm1_vcpu6_curr_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu6_curr_ts);
+
+int vm1_vcpu7_pid = 0;
+module_param(vm1_vcpu7_pid, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu7_pid);
+int vm1_vcpu7_ts = 0;
+module_param(vm1_vcpu7_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu7_ts);
+int vm1_is_vcpu7_on = 0;
+module_param(vm1_is_vcpu7_on, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_is_vcpu7_on);
+int vm1_vcpu7_curr_ts = 0;
+module_param(vm1_vcpu7_curr_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu7_curr_ts);
+
+int vm1_vcpu8_pid = 0;
+module_param(vm1_vcpu8_pid, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu8_pid);
+int vm1_vcpu8_ts = 0;
+module_param(vm1_vcpu8_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu8_ts);
+int vm1_is_vcpu8_on = 0;
+module_param(vm1_is_vcpu8_on, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_is_vcpu8_on);
+int vm1_vcpu8_curr_ts = 0;
+module_param(vm1_vcpu8_curr_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu8_curr_ts);
+
+int vm1_vcpu9_pid = 0;
+module_param(vm1_vcpu9_pid, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu9_pid);
+int vm1_vcpu9_ts = 0;
+module_param(vm1_vcpu9_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu9_ts);
+int vm1_is_vcpu9_on = 0;
+module_param(vm1_is_vcpu9_on, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_is_vcpu9_on);
+int vm1_vcpu9_curr_ts = 0;
+module_param(vm1_vcpu9_curr_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu9_curr_ts);
+
+int vm1_vcpu10_pid = 0;
+module_param(vm1_vcpu10_pid, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu10_pid);
+int vm1_vcpu10_ts = 0;
+module_param(vm1_vcpu10_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu10_ts);
+int vm1_is_vcpu10_on = 0;
+module_param(vm1_is_vcpu10_on, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_is_vcpu10_on);
+int vm1_vcpu10_curr_ts = 0;
+module_param(vm1_vcpu10_curr_ts, int, 0664);
+EXPORT_SYMBOL_GPL(vm1_vcpu10_curr_ts);
 //ended
 
 #ifdef smp_mb__before_atomic
@@ -2881,22 +2991,88 @@ need_resched:
 
 		//added by Weiwei Jia
 		do_gettimeofday(&(next->__ts));
+		//microseconds
 		next->__start_ts = (s64) ((next->__ts).tv_sec * 1000000 + (next->__ts).tv_usec);
 		prev->__end_ts = next->__start_ts;
-		if (enable_flag == 1 && prev->pid == enable_pid) {
+		if (enable_vm1_flag == 1) {
 			//printk(KERN_INFO "%lld\n", prev->__end_ts - prev->__start_ts);
 			//diff = (prev->se).sum_exec_runtime - (prev->se).prev_sum_exec_runtime;
-			diff = prev->__end_ts - prev->__start_ts;
-			printk(KERN_INFO "%lld\n", diff);
+			if (prev->pid == vm1_vcpu2_pid) {
+				vm1_vcpu2_ts = prev->__end_ts - prev->__start_ts;
+				vm1_is_vcpu2_on = 0;
+			} else if (prev->pid == vm1_vcpu3_pid) {
+				vm1_vcpu3_ts = prev->__end_ts - prev->__start_ts;
+				vm1_is_vcpu3_on = 0;
+			} else if (prev->pid == vm1_vcpu4_pid) {
+				vm1_vcpu4_ts = prev->__end_ts - prev->__start_ts;
+				vm1_is_vcpu4_on = 0;
+			} else if (prev->pid == vm1_vcpu5_pid) {
+				vm1_vcpu5_ts = prev->__end_ts - prev->__start_ts;
+				vm1_is_vcpu5_on = 0;
+			} else if (prev->pid == vm1_vcpu6_pid) {
+				vm1_vcpu6_ts = prev->__end_ts - prev->__start_ts;
+				vm1_is_vcpu6_on = 0;
+			} else if (prev->pid == vm1_vcpu7_pid) {
+				vm1_vcpu7_ts = prev->__end_ts - prev->__start_ts;
+				vm1_is_vcpu7_on = 0;
+			} else if (prev->pid == vm1_vcpu8_pid) {
+				vm1_vcpu8_ts = prev->__end_ts - prev->__start_ts;
+				vm1_is_vcpu8_on = 0;
+			} else if (prev->pid == vm1_vcpu9_pid) {
+				vm1_vcpu9_ts = prev->__end_ts - prev->__start_ts;
+				vm1_is_vcpu9_on = 0;
+			} else if (prev->pid == vm1_vcpu10_pid) {
+				vm1_vcpu10_ts = prev->__end_ts - prev->__start_ts;
+				vm1_is_vcpu10_on = 0;
+			}
+			
+			if (next->pid == vm1_vcpu2_pid) {
+				vm1_is_vcpu2_on = 1;
+				vm1_vcpu2_curr_ts = next->__start_ts;
+			} else if (next->pid == vm1_vcpu3_pid) {
+				vm1_is_vcpu3_on = 1;
+				vm1_vcpu3_curr_ts = next->__start_ts;
+			} else if (next->pid == vm1_vcpu4_pid) {
+				vm1_is_vcpu4_on = 1;
+				vm1_vcpu4_curr_ts = next->__start_ts;
+			} else if (next->pid == vm1_vcpu5_pid) {
+				vm1_is_vcpu5_on = 1;
+				vm1_vcpu5_curr_ts = next->__start_ts;
+			} else if (next->pid == vm1_vcpu6_pid) {
+				vm1_is_vcpu6_on = 1;
+				vm1_vcpu6_curr_ts = next->__start_ts;
+			} else if (next->pid == vm1_vcpu7_pid) {
+				vm1_is_vcpu7_on = 1;
+				vm1_vcpu7_curr_ts = next->__start_ts;
+			} else if (next->pid == vm1_vcpu8_pid) {
+				vm1_is_vcpu8_on = 1;
+				vm1_vcpu8_curr_ts = next->__start_ts;
+			} else if (next->pid == vm1_vcpu9_pid) {
+				vm1_is_vcpu9_on = 1;
+				vm1_vcpu9_curr_ts = next->__start_ts;
+			} else if (next->pid == vm1_vcpu10_pid) {
+				vm1_is_vcpu10_on = 1;
+				vm1_vcpu10_curr_ts = next->__start_ts;
+			}
+			
 #if 1
-			printk(KERN_INFO "next process id is %d\n", next->pid);
-			if (diff < 2000) {
-			    printk(KERN_INFO "------------------------------------------\n");
-			    printk(KERN_INFO "Start timestamp is %lld microseconds\n", prev->__start_ts);
-			    printk(KERN_INFO "End timestamp is %lld microseconds\n", prev->__end_ts);
-			    printk(KERN_INFO "Timeslice is %lld micorseconds\n\n", diff);
-			    dump_stack();
-			    printk(KERN_INFO "------------------------------------------\n");
+			if ((enable_vm1_debug == 1) && (prev->pid == vm1_vcpu2_pid ||
+			prev->pid == vm1_vcpu3_pid || prev->pid == vm1_vcpu4_pid ||
+			prev->pid == vm1_vcpu5_pid || prev->pid == vm1_vcpu6_pid ||
+			prev->pid == vm1_vcpu7_pid || prev->pid == vm1_vcpu8_pid ||
+			prev->pid == vm1_vcpu9_pid || prev->pid == vm1_vcpu10_pid)) {
+				printk(KERN_INFO "Current process id is %d\n", prev->pid);
+				printk(KERN_INFO "Next process id is %d\n", next->pid);
+				diff = prev->__end_ts - prev->__start_ts;
+				printk(KERN_INFO "%lld\n", diff);
+				if (diff < 2000) {
+					printk(KERN_INFO "------------------------------------------\n");
+					printk(KERN_INFO "Current process's start timestamp is %lld microseconds\n", prev->__start_ts);
+					printk(KERN_INFO "Current process's end timestamp is %lld microseconds\n", prev->__end_ts);
+					printk(KERN_INFO "Current process's timeslice is %lld micorseconds\n\n", diff);
+					dump_stack();
+					printk(KERN_INFO "------------------------------------------\n");
+				}
 			}
 #endif
 		}
