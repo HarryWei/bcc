@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# iofilter - create based on biotop
+# iomigrater - create based on iofilter
 # @lint-avoid-python-3-compatibility-imports
 #
 # biotop  block device (disk) I/O by process.
@@ -10,10 +10,9 @@
 # This uses in-kernel eBPF maps to cache process details (PID and comm) by I/O
 # request, as well as a starting timestamp for calculating I/O latency.
 #
-# Copyright 2016 Netflix, Inc.
 # Licensed under the Apache License, Version 2.0 (the "License")
 #
-# 06-Feb-2016   Brendan Gregg   Created this.
+# Weiwei Jia <harryxiyou@gmail.com> (python) 2017
 
 from __future__ import print_function
 from bcc import BPF
@@ -172,7 +171,8 @@ b.attach_kprobe(event="blk_mq_start_request", fn_name="trace_req_start")
 b.attach_kprobe(event="blk_account_io_completion",
     fn_name="trace_req_completion")
 
-print('Tracing... Output every %d secs. Hit Ctrl-C to end' % interval)
+#print('Tracing... Output every %d secs. Hit Ctrl-C to end' % interval)
+print('Tracing... Output every 100 milliseconds. Hit Ctrl-C to end')
 
 # cache disk major,minor -> diskname
 disklookup = {}
@@ -219,7 +219,7 @@ while 1:
         #    "W" if k.rwflag else "R", k.major, k.minor, diskname, v.io,
         #    v.bytes / 1024, avg_ms))
         io_percent = ((float(v.ns) / 1000.0)/100000.0)
-        if io_percent > 0.0:
+        if io_percent > 0.5 and k.pid != 0:
             print("%-6d %-16s %6.5f %d" % (k.pid, k.name, io_percent, v.ns))
             v.ns = 0
             io_percent = 0.0
