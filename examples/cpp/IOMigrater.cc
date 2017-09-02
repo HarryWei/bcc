@@ -255,7 +255,7 @@ int main(int argc, char** argv) {
   ret = attach();
   if (ret != 0) handle_error("Attach Kprobe Error!\n");
   
-  int probe_time = 10000;  // 10 milliseconds in default
+  int probe_time = 1000000;  // 10 milliseconds in default
   if (argc == 2) {
     probe_time = atoi(argv[1]);
   }

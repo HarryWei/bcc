@@ -222,11 +222,11 @@ while 1:
         io_percent = ((float(v.ns) / 1000.0)/100000.0)
         if io_percent > 0.5 and k.pid != 0:
             print("%-6d %-16s %6.5f %d" % (k.pid, k.name, io_percent, v.ns))
-			affinity = os.shed_getaffinity(k.pid)
-			print('PID %d is running on CPU %d' % (k.pid, affinity))
-			os.sched_setaffinity(k.pid, 1)
-			affinity = os.shed_getaffinity(k.pid)
-			print('PID %d is migrated to CPU %d' % (k.pid, affinity))
+            affinity = os.sched_getaffinity(k.pid)
+            print('PID %d is running on CPU %s' % (k.pid, affinity))
+            os.sched_setaffinity(k.pid, {1})
+            affinity = os.sched_getaffinity(k.pid)
+            print('PID %d is migrated to CPU %s' % (k.pid, affinity))
             v.ns = 0
             io_percent = 0.0
 
