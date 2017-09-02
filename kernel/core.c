@@ -149,7 +149,7 @@ module_param(vm1_vcpu5_pid, int, 0664);
 EXPORT_SYMBOL_GPL(vm1_vcpu5_pid);
 int vm1_vcpu5_ts = 0;
 module_param(vm1_vcpu5_ts, int, 0664);
-EXPORT_SYMBOL_GPL(vm1_vcpu2_ts);
+EXPORT_SYMBOL_GPL(vm1_vcpu5_ts);
 int vm1_is_vcpu5_on = 0;
 module_param(vm1_is_vcpu5_on, int, 0664);
 EXPORT_SYMBOL_GPL(vm1_is_vcpu5_on);
