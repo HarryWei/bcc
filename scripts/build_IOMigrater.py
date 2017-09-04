@@ -12,7 +12,7 @@ src = "/sys/fs/cgroup/cpuset/machine/tmp1.libvirt-qemu/"
 des = "/sys/module/core/parameters/"
 vCPU_num = 9
 vCPU_start = 2
-vCPU_end = 10
+vCPU_end = 11
 
 def ReadFile(filepath):
   f = open(filepath, "r")
