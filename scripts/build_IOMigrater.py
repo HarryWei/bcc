@@ -22,6 +22,13 @@ def ReadFile(filepath):
     f.close()
 
   return contents
+
+def WriteFile(filepath, buf):
+  f = open(filepath, "w")
+  try:
+    f.write(buf)
+  finally:
+    f.close()
   
 for i in range(vCPU_start, vCPU_end):
   print("This is vCPU %d" % i)
@@ -29,5 +36,8 @@ for i in range(vCPU_start, vCPU_end):
   new_des = des + "vm1_vcpu%d_pid" % i
   if os.path.exists(new_src) and os.path.exists(new_des):
     print("new_src: %s, new_des: %s" % (new_src, new_des))
+	contents = ReadFile(new_src)
+	print("contents: %s" % contents)
+	WriteFile(new_des, contents)
   else:
     sys.exit("Error: Cannot find %s or %s file." % (nes_src, new_des))
