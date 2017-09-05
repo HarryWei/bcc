@@ -20,6 +20,8 @@ from time import sleep, strftime
 import argparse
 import signal
 import os
+import sys
+import time
 from subprocess import call
 
 # arguments
@@ -51,10 +53,54 @@ clear = not int(args.noclear)
 loadavg = "/proc/loadavg"
 diskstats = "/proc/diskstats"
 
+# IOMigrater constants
+host_dir = "/mnt/"
+vCPU_num = 9
+vCPU_start = 2
+vCPU_end = 11
+
 # signal handler
 def signal_ignore(signal, frame):
     print()
 
+def ReadFile(filepath):
+  f = open(filepath, "r")
+  try:
+    contents = f.read()
+  finally:
+    f.close()
+
+  return contents
+
+def WriteFile(filepath, buf):
+  f = open(filepath, "w")
+  try:
+    f.write(buf)
+  finally:
+    f.close()
+
+# timestamp is in microseconds.
+def get_available_vCPUs():
+    vCPUs = []
+    for i in range(vCPU_start, vCPU_end):
+        is_vCPU_on_path = host_dir + "vm1_is_vcpu%d_on" % i
+        vCPU_curr_ts_path = host_dir + "vm1_vcpu%d_curr_ts" % i
+        vCPU_prev_timeslice_path = host_dir + "vm1_vcpu%d_ts" % i
+        if os.path.exists(is_vCPU_on_path) and
+		os.path.exists(vCPU_curr_ts_path) and os.path.exists(vCPU_prev_timeslice_path):
+            is_vCPU_on = ReadFile(is_vCPU_on_path)
+            if int(is_vCPU_on) == 1:
+                vCPU_curr_ts = ReadFile(vCPU_curr_ts_path)
+                guest_curr_ts = time.time() * pow(10, 6)
+				vCPU_used_timeslice = long(guest_curr_ts) - long(vCPU_curr_ts)
+                vCPU_prev_timeslice = ReadFile(vCPU_prev_timeslice_path)
+                vCPU_remaining_timeslice = long(vCPU_prev_timeslice) - vCPU_used_timeslice
+				vCPUs.append((vCPU_remaining_timeslice, i))
+        else:
+            sys.exit("Error: Cannot find %s file." % (is_vCPU_on_path))
+    vCPUs.sort()
+    return vCPUs
+	
 # load BPF program
 b = BPF(text="""
 #include <uapi/linux/ptrace.h>
