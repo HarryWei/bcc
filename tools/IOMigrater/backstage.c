@@ -106,13 +106,13 @@ void init_cpu_thread(void) {
 		//_vcpu_num[i] = i;
 		g_mutex_lock(&mutex);
 		printf("i is %lu\n", i);
-		i++;
 		j = i;
 		ret = pthread_create(&(p[i]), NULL, thread_func, &j);
 		if (ret != 0) {
 			printf("Pthread create error!\n");
 			exit(EXIT_SUCCESS);
 		}
+		i++;
 	}
 	
 	return;
