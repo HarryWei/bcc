@@ -105,7 +105,7 @@ void init_cpu_thread(void) {
 
 	for (i = 0; i < vcpu_num; i++) {
 		_vcpu_num[i] = i;
-		ret = pthread_create(&(p[i]), NULL, thread_func, &_vcpu_num[i]);
+		ret = pthread_create(&(p[i]), NULL, thread_func, &(_vcpu_num[i]));
 		if (ret != 0) {
 			printf("Pthread create error!\n");
 			exit(EXIT_SUCCESS);
