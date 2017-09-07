@@ -105,6 +105,7 @@ void init_cpu_thread(void) {
 
 	for (i = 0; i < vcpu_num; i++) {
 		g_mutex_lock(&mutex);
+		printf("i is %lu\n", i);
 		_vcpu_num[i] = i;
 		ret = pthread_create(&(p[i]), NULL, thread_func, &(_vcpu_num[i]));
 		if (ret != 0) {
