@@ -82,7 +82,7 @@ void *thread_func(void *arg) {
 	set_idle_priority();
 
 	vn = get_affinity();
-	printf("CPU daemon worker is on vCPU %lu\n", vn);
+	//printf("CPU daemon worker is on vCPU %lu\n", vn);
 	//int pid = syscall(SYS_gettid);
 	//printf("CPU daemon worker thread PID number is %d\n", pid);
 
@@ -105,7 +105,7 @@ void init_cpu_thread(void) {
 	for (i = 0; i < vcpu_num; i++) {
 		//_vcpu_num[i] = i;
 		g_mutex_lock(&mutex);
-		printf("i is %lu\n", i);
+		//printf("i is %lu\n", i);
 		j = i;
 		ret = pthread_create(&(p[i]), NULL, thread_func, &j);
 		if (ret != 0) {
