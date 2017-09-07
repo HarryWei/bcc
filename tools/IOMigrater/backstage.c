@@ -96,6 +96,7 @@ void *thread_func(void *arg) {
 void init_cpu_thread(void) {
 	int ret = 0;
 	uint64_t i = 0;
+	uint64_t j = 0;
 
 	int vcpu_num = get_nprocs();
 	uint64_t _vcpu_num[vcpu_num];
@@ -104,12 +105,13 @@ void init_cpu_thread(void) {
 	if (p == NULL) handle_error("malloc error!");
 
 	for (i = 0; i < vcpu_num; i++) {
-		_vcpu_num[i] = i;
-		ret = pthread_create(&(p[i]), NULL, thread_func, &(_vcpu_num[i]));
+		_vcpu_num[j] = i;
+		ret = pthread_create(&(p[i]), NULL, thread_func, &(_vcpu_num[j]));
 		if (ret != 0) {
 			printf("Pthread create error!\n");
 			exit(EXIT_SUCCESS);
 		}
+		j = j + 1;
 	}
 	
 	return;
