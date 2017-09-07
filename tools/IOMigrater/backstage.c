@@ -116,5 +116,8 @@ void init_cpu_thread(void) {
 int main(int argc, char **argv) {
 	init_cpu_thread();
 	
+	for (i = 0; i < get_nprocs(); i++) {
+		pthread_join(p[i], NULL);
+	}
 	return 0;
 }
