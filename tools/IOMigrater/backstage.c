@@ -75,7 +75,6 @@ void set_idle_priority(void) {
 }
 
 void *thread_func(void *arg) {
-	g_mutex_lock(&mutex);
 	uint64_t vn = *((uint64_t *) arg);
 	g_mutex_unlock(&mutex);
 	printf("This is %lu thread worker.\n", vn);
@@ -104,17 +103,15 @@ void init_cpu_thread(void) {
 	p = (pthread_t *) malloc(sizeof(pthread_t) * vcpu_num);
 	if (p == NULL) handle_error("malloc error!");
 
-	for (i = 0; i < vcpu_num; ) {
+	for (i = 0; i < vcpu_num; i++) {
 		printf("i is %lu\n", i);
 		//_vcpu_num[i] = i;
+		g_mutex_lock(&mutex);
 		ret = pthread_create(&(p[i]), NULL, thread_func, &i);
 		if (ret != 0) {
 			printf("Pthread create error!\n");
 			exit(EXIT_SUCCESS);
 		}
-		g_mutex_lock(&mutex);
-		i += 1;
-		g_mutex_unlock(&mutex);
 	}
 	
 	return;
