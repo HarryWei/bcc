@@ -102,10 +102,11 @@ void init_cpu_thread(void) {
 	p = (pthread_t *) malloc(sizeof(pthread_t) * vcpu_num);
 	if (p == NULL) handle_error("malloc error!");
 
-	for (i = 1; i < vcpu_num - 1; i++) {
+	for (i = 1; i < vcpu_num - 1; ) {
 		//_vcpu_num[i] = i;
 		g_mutex_lock(&mutex);
 		printf("i is %lu\n", i);
+		i++;
 		j = i;
 		ret = pthread_create(&(p[i]), NULL, thread_func, &j);
 		if (ret != 0) {
