@@ -38,6 +38,7 @@
 
 GMutex mutex;
 static pthread_t *p;
+uint64_t j = 0;
 
 #define handle_error(msg) \
 	do { perror(msg); exit(EXIT_FAILURE); } while (0)
@@ -97,7 +98,6 @@ void *thread_func(void *arg) {
 void init_cpu_thread(void) {
 	int ret = 0;
 	uint64_t i = 0;
-	uint64_t j = 0;
 
 	int vcpu_num = get_nprocs();
 	//uint64_t _vcpu_num[vcpu_num];
