@@ -78,14 +78,15 @@ void set_idle_priority(void) {
 
 void *thread_func(void *arg) {
 	uint64_t vn = *((uint64_t *) arg);
+	printf("This is %d thread worker.\n", vn);
 	uint64_t i = 0;
 	set_affinity(vn);
 	set_idle_priority();
 
 	vn = get_affinity();
-	printf("CPU daemon worker is on %lu\n", vn);
-	int pid = syscall(SYS_gettid);
-	printf("CPU daemon worker thread PID number is %d\n", pid);
+	printf("CPU daemon worker is on vCPU %lu\n", vn);
+	//int pid = syscall(SYS_gettid);
+	//printf("CPU daemon worker thread PID number is %d\n", pid);
 
 	while(1) {
 		i += 1;
@@ -94,9 +95,10 @@ void *thread_func(void *arg) {
 
 void init_cpu_thread(void) {
 	int ret = 0;
-	uint64_t i;
+	uint64_t i = 0;
 
 	int vcpu_num = get_nprocs();
+	printf("There are %d vCPUs in this VM.\n", vcpu_num);
 	p = (pthread_t *) malloc(sizeof(pthread_t) * vcpu_num);
 	if (p == NULL)
 		handle_error("malloc error!");
