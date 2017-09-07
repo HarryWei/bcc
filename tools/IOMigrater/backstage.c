@@ -36,7 +36,7 @@
 #include <sys/shm.h>
 #include <sys/ipc.h>
 
-GMutex *mutex = NULL;
+GMutex mutex;
 static pthread_t *p;
 
 #define handle_error(msg) \
