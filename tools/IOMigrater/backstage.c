@@ -78,6 +78,7 @@ void *thread_func(void *arg) {
 	uint64_t vn = *((uint64_t *) arg);
 	uint64_t i = 0;
 	set_affinity(vn);
+	printf("Set affinity to vCPU %lu\n", vn);
 	g_mutex_unlock(&mutex);
 
 	set_idle_priority();
