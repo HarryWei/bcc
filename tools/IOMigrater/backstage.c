@@ -102,10 +102,10 @@ void init_cpu_thread(void) {
 	int vcpu_num = get_nprocs();
 	//uint64_t _vcpu_num[vcpu_num];
 	printf("There are %d vCPUs in this VM.\n", vcpu_num);
-	p = (pthread_t *) malloc(sizeof(pthread_t) * (vcpu_num - 2));
+	p = (pthread_t *) malloc(sizeof(pthread_t) * vcpu_num);
 	if (p == NULL) handle_error("malloc error!");
 
-	for (i = 0; i < vcpu_num - 2; i++) {
+	for (i = 1; i < vcpu_num - 1; i++) {
 		//_vcpu_num[i] = i;
 		g_mutex_lock(&mutex);
 		printf("i is %lu\n", i);
@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
 	}
 	init_cpu_thread();
 	
-	for (i = 0; i < get_nprocs(); i++) {
+	for (i = 1; i < get_nprocs() - 1; i++) {
 		pthread_join(p[i], NULL);
 	}
 	if (p != NULL) free(p);
