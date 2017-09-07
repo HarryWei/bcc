@@ -78,11 +78,12 @@ void *thread_func(void *arg) {
 	uint64_t vn = *((uint64_t *) arg);
 	uint64_t i = 0;
 	set_affinity(vn);
-	g_mutex_unlock(&mutex);
+
 	set_idle_priority();
 
 	vn = get_affinity();
 	printf("CPU daemon worker is on vCPU %lu\n", vn);
+	g_mutex_unlock(&mutex);
 	//int pid = syscall(SYS_gettid);
 	//printf("CPU daemon worker thread PID number is %d\n", pid);
 
