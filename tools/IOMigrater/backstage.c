@@ -110,7 +110,7 @@ void init_cpu_thread(void) {
 		j = i;
 		ret = pthread_create(&(p[i]), NULL, thread_func, &j);
 		i += 1;
-		if (i == vcpu_num) i = i - 1;
+		if (i == vcpu_num - 1) i = i - 1;
 		if (ret != 0) {
 			printf("Pthread create error!\n");
 			exit(EXIT_SUCCESS);
