@@ -113,7 +113,7 @@ void init_cpu_thread(void) {
 			exit(EXIT_SUCCESS);
 		}
 		g_mutex_lock(&mutex);
-		i = i + 1;
+		i += 1;
 		g_mutex_unlock(&mutex);
 	}
 	
