@@ -112,12 +112,28 @@ void init_cpu_thread(void) {
 	return;
 }
 
+void sig_handler(int signo) {
+	if (signo == SIGINT) {
+		printf("Free resource ...\n");
+		if (p != NULL) free(p);
+	} else
+		handle_error("Signal Error!\n");
+
+	exit(EXIT_SUCCESS);
+}
+
 
 int main(int argc, char **argv) {
+	int i = 0;
+	
+	if (signal(SIGINT, sig_handler) == SIG_ERR) {
+		handle_error("SIGINT error!\n");
+	}
 	init_cpu_thread();
 	
 	for (i = 0; i < get_nprocs(); i++) {
 		pthread_join(p[i], NULL);
 	}
+	if (p != NULL) free(p);
 	return 0;
 }
