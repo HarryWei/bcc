@@ -102,10 +102,10 @@ void init_cpu_thread(void) {
 	int vcpu_num = get_nprocs();
 	//uint64_t _vcpu_num[vcpu_num];
 	printf("There are %d vCPUs in this VM.\n", vcpu_num);
-	p = (pthread_t *) malloc(sizeof(pthread_t) * vcpu_num);
+	p = (pthread_t *) malloc(sizeof(pthread_t) * (vcpu_num - 2));
 	if (p == NULL) handle_error("malloc error!");
 
-	for (i = 1; i < vcpu_num - 1; i++) {
+	for (i = 0; i < vcpu_num - 2; i++) {
 		//_vcpu_num[i] = i;
 		g_mutex_lock(&mutex);
 		printf("i is %lu\n", i);
