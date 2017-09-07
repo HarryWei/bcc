@@ -78,7 +78,7 @@ void set_idle_priority(void) {
 
 void *thread_func(void *arg) {
 	uint64_t vn = *((uint64_t *) arg);
-	printf("This is %d thread worker.\n", vn);
+	printf("This is %lu thread worker.\n", vn);
 	uint64_t i = 0;
 	set_affinity(vn);
 	set_idle_priority();
