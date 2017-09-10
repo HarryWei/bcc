@@ -2930,7 +2930,7 @@ static void __sched __schedule(void)
 	unsigned long *switch_count;
 	struct rq *rq;
 	int cpu;
-	u64 diff = 0; //added by Weiwei Jia
+	long diff = 0; //added by Weiwei Jia
 	struct timeval __ts;
 
 need_resched:
@@ -2993,7 +2993,7 @@ need_resched:
 		//added by Weiwei Jia
 		do_gettimeofday(&__ts);
 		//microseconds
-		next->__start_ts = (u64) (__ts.tv_sec * 1000000llu + __ts.tv_usec);
+		next->__start_ts = (long) (__ts.tv_sec * 1000000l + __ts.tv_usec);
 		prev->__end_ts = next->__start_ts;
 		if (enable_vm1_flag == 1) {
 			//printk(KERN_INFO "%lld\n", prev->__end_ts - prev->__start_ts);
@@ -3068,9 +3068,9 @@ need_resched:
 				printk(KERN_INFO "%llu\n", diff);
 				if (diff < 2000) {
 					printk(KERN_INFO "------------------------------------------\n");
-					printk(KERN_INFO "Current process's start timestamp is %llu microseconds\n", prev->__start_ts);
-					printk(KERN_INFO "Current process's end timestamp is %llu microseconds\n", prev->__end_ts);
-					printk(KERN_INFO "Current process's timeslice is %llu micorseconds\n\n", diff);
+					printk(KERN_INFO "Current process's start timestamp is %ld microseconds\n", prev->__start_ts);
+					printk(KERN_INFO "Current process's end timestamp is %ld microseconds\n", prev->__end_ts);
+					printk(KERN_INFO "Current process's timeslice is %ld micorseconds\n\n", diff);
 					dump_stack();
 					printk(KERN_INFO "------------------------------------------\n");
 				}

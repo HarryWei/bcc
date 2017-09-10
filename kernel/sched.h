@@ -1327,8 +1327,8 @@ struct task_struct {
 
 	//added by Weiwei Jia
 	//struct timeval __ts;
-	u64 __start_ts;
-	u64 __end_ts;
+	long __start_ts;
+	long __end_ts;
 	//ended
 
 	pid_t pid;
