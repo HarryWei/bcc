@@ -3065,7 +3065,7 @@ need_resched:
 				printk(KERN_INFO "Current process id is %d\n", prev->pid);
 				printk(KERN_INFO "Next process id is %d\n", next->pid);
 				diff = prev->__end_ts - prev->__start_ts;
-				printk(KERN_INFO "%llu\n", diff);
+				printk(KERN_INFO "%ld\n", diff);
 				if (diff < 2000) {
 					printk(KERN_INFO "------------------------------------------\n");
 					printk(KERN_INFO "Current process's start timestamp is %ld microseconds\n", prev->__start_ts);
