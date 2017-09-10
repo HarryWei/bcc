@@ -1326,9 +1326,9 @@ struct task_struct {
 	unsigned sched_contributes_to_load:1;
 
 	//added by Weiwei Jia
-	struct timeval __ts;
-	s64 __start_ts;
-	s64 __end_ts;
+	//struct timeval __ts;
+	u64 __start_ts;
+	u64 __end_ts;
 	//ended
 
 	pid_t pid;
