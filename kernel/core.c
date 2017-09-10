@@ -106,12 +106,12 @@ int vm1_vcpu2_pid = 0;
 module_param(vm1_vcpu2_pid, int, 0664);
 EXPORT_SYMBOL_GPL(vm1_vcpu2_pid);
 //The timestamp when this vCPU is scheduled on pCPU
-unsigned long long vm1_vcpu2_curr_ts = 0;
-module_param(vm1_vcpu2_curr_ts, unsigned long long, 0664);
+uint64_t vm1_vcpu2_curr_ts = 0;
+module_param(vm1_vcpu2_curr_ts, uint64_t, 0664);
 EXPORT_SYMBOL_GPL(vm1_vcpu2_curr_ts);
 //The last timeslice of this vCPU
-unsigned long long vm1_vcpu2_ts = 0;
-module_param(vm1_vcpu2_ts, unsigned long long, 0664);
+uint64_t vm1_vcpu2_ts = 0;
+module_param(vm1_vcpu2_ts, uint64_t, 0664);
 EXPORT_SYMBOL_GPL(vm1_vcpu2_ts);
 //Flag of whether this vCPU is on pCPU
 int vm1_is_vcpu2_on = 0;
