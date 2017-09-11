@@ -91,10 +91,10 @@ def get_available_vCPUs():
             if int(is_vCPU_on) == 1:
                 vCPU_curr_ts = ReadFile(vCPU_curr_ts_path)
                 guest_curr_ts = time.time() * pow(10, 6)
-		vCPU_used_timeslice = long(guest_curr_ts) - long(vCPU_curr_ts)
+                vCPU_used_timeslice = int(guest_curr_ts) - int(vCPU_curr_ts)
                 vCPU_prev_timeslice = ReadFile(vCPU_prev_timeslice_path)
-                vCPU_remaining_timeslice = long(vCPU_prev_timeslice) - vCPU_used_timeslice
-		vCPUs.append((vCPU_remaining_timeslice, i))
+                vCPU_remaining_timeslice = int(vCPU_prev_timeslice) - vCPU_used_timeslice
+                vCPUs.append((vCPU_remaining_timeslice, i))
         else:
             sys.exit("Error: Cannot find %s file." % (is_vCPU_on_path))
     vCPUs.sort()
@@ -269,13 +269,13 @@ while 1:
             print("%-6d %-16s %6.5f %d" % (k.pid, k.name, io_percent, v.ns))
             affinity = os.sched_getaffinity(k.pid)
             print('PID %d is running on CPU %s' % (k.pid, affinity))
-	    vCPUs = get_available_vCPUs()
-	    if len(vCPUs) != 0:
-	        print("Biggest remaining timeslice vCPU is %d" % vCPUs[len(vCPUs) - 1][1])
-		vCPU = {vCPUs[len(vCPUs) - 1][1]}
-		os.sched_setaffinity(k.pid, vCPU)
-		affinity = os.sched_getaffinity(k.pid)
-		print('PID %d is migrated to CPU %s' % (k.pid, affinity))
+            vCPUs = get_available_vCPUs()
+            if len(vCPUs) != 0:
+                vCPU = vCPUs[len(vCPUs) - 1][1]
+                print("Biggest remaining timeslice vCPU is %d" % vCPU)
+                os.sched_setaffinity(k.pid, {vCPU})
+                affinity = os.sched_getaffinity(k.pid)
+                print('PID %d is migrated to CPU %s' % (k.pid, affinity))
             v.ns = 0
             io_percent = 0.0
 
