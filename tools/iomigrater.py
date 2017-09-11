@@ -58,6 +58,7 @@ host_dir = "/mnt/"
 vCPU_num = 9
 vCPU_start = 2
 vCPU_end = 11
+filer1 = "kworker"
 
 # signal handler
 def signal_ignore(signal, frame):
@@ -81,8 +82,8 @@ def WriteFile(filepath, buf):
 
 def migration_check(pid):
     affinity = os.sched_getaffinity(pid)
-    {vcpu} = affinity
-	_vcpu = int(vcpu)
+    vcpu = affinity.pop()
+    _vcpu = int(vcpu)
     print('PID %d is running on CPU %d' % (pid, _vcpu))
     is_vCPU_on_path = host_dir + "vm1_is_vcpu%d_on" % _vcpu
     vCPU_curr_ts_path = host_dir + "vm1_vcpu%d_curr_ts" % _vcpu
@@ -147,7 +148,7 @@ def do_migration(pid):
         else:
             return 0
     else:
-	    return 0
+        return 0
 				
 
 # load BPF program
@@ -315,11 +316,11 @@ while 1:
         #    "W" if k.rwflag else "R", k.major, k.minor, diskname, v.io,
         #    v.bytes / 1024, avg_ms))
         io_percent = ((float(v.ns) / 1000.0)/100000.0)
-        if io_percent > 0.5 and k.pid != 0:
+        if io_percent > 0.5 and k.pid != 0 and (k.name.find(filer1) == -1):
             print("%-6d %-16s %6.5f %d" % (k.pid, k.name, io_percent, v.ns))
             ret = do_migration(k.pid)
             if ret == 1:
-			    affinity = os.sched_getaffinity(k.pid)
+                affinity = os.sched_getaffinity(k.pid)
                 print('PID %d is migrated to CPU %s' % (k.pid, affinity))
             v.ns = 0
             io_percent = 0.0
