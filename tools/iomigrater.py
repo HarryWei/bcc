@@ -316,7 +316,8 @@ while 1:
         #    "W" if k.rwflag else "R", k.major, k.minor, diskname, v.io,
         #    v.bytes / 1024, avg_ms))
         io_percent = ((float(v.ns) / 1000.0)/100000.0)
-        if io_percent > 0.5 and k.pid != 0 and (k.name.find(filer1) == -1):
+        task_name = k.name.decode("utf-8")
+        if io_percent > 0.5 and k.pid != 0 and (task_name.find(filer1) == -1):
             print("%-6d %-16s %6.5f %d" % (k.pid, k.name, io_percent, v.ns))
             ret = do_migration(k.pid)
             if ret == 1:
