@@ -271,11 +271,12 @@ while 1:
             affinity = os.sched_getaffinity(k.pid)
             print('PID %d is running on CPU %s' % (k.pid, affinity))
 			vCPUs = get_available_vCPUs()
-			print("Biggest remaining timeslice vCPU is %d" % vCPUs[len(vCPUs) - 1][1])
-			vCPU = {vCPUs[len(vCPUs) - 1][1]}
-            os.sched_setaffinity(k.pid, vCPU)
-            affinity = os.sched_getaffinity(k.pid)
-            print('PID %d is migrated to CPU %s' % (k.pid, affinity))
+			if len(vCPUs) != 0:
+				print("Biggest remaining timeslice vCPU is %d" % vCPUs[len(vCPUs) - 1][1])
+				vCPU = {vCPUs[len(vCPUs) - 1][1]}
+				os.sched_setaffinity(k.pid, vCPU)
+				affinity = os.sched_getaffinity(k.pid)
+				print('PID %d is migrated to CPU %s' % (k.pid, affinity))
             v.ns = 0
             io_percent = 0.0
 
