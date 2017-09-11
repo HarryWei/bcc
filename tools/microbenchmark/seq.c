@@ -1,12 +1,10 @@
 /*
- * sol/sol1.c
+ * microbenchmark/seq.c
  *
  * Weiwei Jia <wj47@njit.edu> (C) 2016
  *
- * Solution 1 implementation for I/O project.
+ * microbenchmark for IOMigrater
  *
- * TODO: Find why detected time slice is bigger than (shced_latecy_ns /
- * vCPU_num).
  *
  */
 #define _GNU_SOURCE
@@ -289,7 +287,7 @@ void do_iofunc(void) {
 	//XXX Must set since the I/O thread would be pinned to that vCPU.
 	//j = 0;
 	//set_priority();
-	set_pid_affinity(11, pid);
+	set_pid_affinity(3, pid);
 	j = 2;
 	io_vn = 0;
 	uint64_t _i = 0;
@@ -301,46 +299,17 @@ void do_iofunc(void) {
 	uint64_t mcounter = 0;
 	uint64_t _mcounter = 0;
 	start = debug_time_monotonic_usec();
-	//i = F_SIZE - EACH_SIZE;
 	while (i != F_SIZE) {
-	//while (i > 0) {
-		//_start = debug_time_monotonic_usec();
-		//set_affinity(j);
-		//j = j + 1;
-		//if (j == 11) j = 2;
 		if (EACH_SIZE != (wj.len = pread(wj.fd, buf, EACH_SIZE, i))) {
 			fprintf(stderr, "This read, %lu,  failed!\n", (uint64_t) EACH_SIZE);
 			exit(EXIT_SUCCESS);
 		}
-
-		//_diff = debug_time_monotonic_usec() - _start;
-		//printf("_diff is %lu\n", _diff);
-
-		//if (_diff > 1000) {
-		//	counter += _diff;
-		//}
-
-#if 1
-		while (think_time != 4000) {
-			think_time += 1;
-		}
-		think_time = 0;
-#endif
-
-		//i = i - EACH_SIZE;
 		i = i + EACH_SIZE;
 		memset(buf, '\0', EACH_SIZE + 1);
 	}
 	diff = debug_time_monotonic_usec() - start;
-	printf("diff is %lu\n", diff);
-	printf("counter is %lu\n", counter);
-	printf("mcounter is %lu, _mounter is %lu\n", mcounter, _mcounter);
-	printf("cpu_sleep_counter is %lu\n", cpu_sleep_counter);
-#if defined TEST_TIO_MIGRATION
-	printf("With migration, I/O throughput is %lf MB/s.\n", ((double) F_SIZE / (double) (1024.0 * 1024.0) )  / ((double) diff / (double) 1000000.0));
-#else
-	printf("Without migration, I/O throughput is %lf MB/s.\n", ((double) F_SIZE / (double) (1024.0 * 1024.0) )  / ((double) diff / (double) 1000000.0));
-#endif
+	printf("Cost time: %lu us\n", diff);
+	printf("I/O throughput is %lf MB/s.\n", ((double) F_SIZE / (double) (1024.0 * 1024.0) )  / ((double) diff / (double) 1000000.0));
 }
 
 void init_io_thread(void) {
@@ -359,21 +328,6 @@ void init_io_thread(void) {
 	do_iofunc();
 }
 
-void init_shared_mem(void) {
-	if ((shmid = shmget(key, sizeof(struct shared_mem), 0666)) < 0) {
-		handle_error("shmget error!\n");
-	}
-
-	if ((shm = shmat(shmid, NULL, 0)) == (void *) -1) {
-		handle_error("shmget error!\n");
-	}
-
-	sm = (struct shared_mem *) shm;
-	sm->pid = pid;
-	sm->flag = 1;
-	sm->counter = 1;
-}
-
 int main(int argc, char **argv) {
 	pid = getpid();
 	uint64_t vcpu_num = get_vcpu_count();
@@ -384,7 +338,6 @@ int main(int argc, char **argv) {
 
 	printf("vCPU number is %lu\n", _vcpu_num);
 	printf("Process ID number is %d\n", pid);
-	//init_shared_mem();
 	init_io_thread();
 
 	//pthread_join(pio, NULL);
