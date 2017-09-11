@@ -79,6 +79,32 @@ def WriteFile(filepath, buf):
   finally:
     f.close()
 
+def migration_check(pid):
+    affinity = os.sched_getaffinity(pid)
+    {vcpu} = affinity
+	_vcpu = int(vcpu)
+    print('PID %d is running on CPU %d' % (pid, _vcpu))
+    is_vCPU_on_path = host_dir + "vm1_is_vcpu%d_on" % _vcpu
+    vCPU_curr_ts_path = host_dir + "vm1_vcpu%d_curr_ts" % _vcpu
+    vCPU_prev_timeslice_path = host_dir + "vm1_vcpu%d_ts" % _vcpu
+    if os.path.exists(is_vCPU_on_path) and os.path.exists(vCPU_curr_ts_path) and os.path.exists(vCPU_prev_timeslice_path):
+        is_vCPU_on = ReadFile(is_vCPU_on_path)
+        if int(is_vCPU_on) == 1:
+            vCPU_curr_ts = ReadFile(vCPU_curr_ts_path)
+            guest_curr_ts = time.time() * pow(10, 6)
+            vCPU_used_timeslice = int(guest_curr_ts) - int(vCPU_curr_ts)
+            vCPU_prev_timeslice = ReadFile(vCPU_prev_timeslice_path)
+            vCPU_remaining_timeslice = int(vCPU_prev_timeslice) - vCPU_used_timeslice
+            if vCPU_remaining_timeslice < 3:
+                return 1
+            else:
+                return 0
+        else:
+            return 1		
+    else:
+        sys.exit("Error: Cannot find %s file." % (is_vCPU_on_path))
+        return -1
+
 # timestamp is in microseconds.
 def get_available_vCPUs():
     vCPUs = []
@@ -99,7 +125,25 @@ def get_available_vCPUs():
             sys.exit("Error: Cannot find %s file." % (is_vCPU_on_path))
     vCPUs.sort()
     return vCPUs
-	
+
+def do_migration(pid):
+    flag = migration_check(pid)
+    if flag == 1:
+        vCPUs = get_available_vCPUs()
+        if len(vCPUs) != 0:
+            vCPU = vCPUs[len(vCPUs) - 1][1]
+            vCPU_remaining_timeslice = vCPUs[len(vCPUs) - 1][0]
+            print("Biggest remaining timeslice vCPU is %d, and remaining timeslice is %d" % (vCPU, vCPU_remaining_timeslice))
+            if vCPU_remaining_timeslice >= 9:
+                try:
+                    os.sched_setaffinity(pid, {vCPU})
+                    return 1
+                except OSError:
+                    print ("Catch OSError: process %d might not be migrated" % pid)
+                    return -1
+            else:
+                return 0
+
 # load BPF program
 b = BPF(text="""
 #include <uapi/linux/ptrace.h>
@@ -267,18 +311,10 @@ while 1:
         io_percent = ((float(v.ns) / 1000.0)/100000.0)
         if io_percent > 0.5 and k.pid != 0:
             print("%-6d %-16s %6.5f %d" % (k.pid, k.name, io_percent, v.ns))
-            affinity = os.sched_getaffinity(k.pid)
-            print('PID %d is running on CPU %s' % (k.pid, affinity))
-            vCPUs = get_available_vCPUs()
-            if len(vCPUs) != 0:
-                vCPU = vCPUs[len(vCPUs) - 1][1]
-                print("Biggest remaining timeslice vCPU is %d" % vCPU)
-                try:
-                    os.sched_setaffinity(k.pid, {vCPU})
-                except OSError:
-                    print ("Catch OSError: process %d might not be migrated" % k.pid)
-                affinity = os.sched_getaffinity(k.pid)
-                print('PID %d is migrated to CPU %s' % (k.pid, affinity))
+            ret = do_migration(k.pid)
+            if ret == 1:
+			    affinity = os.sched_getaffinity(pid)
+                print('PID %d is migrated to CPU %s' % (pid, affinity))
             v.ns = 0
             io_percent = 0.0
 
