@@ -273,7 +273,10 @@ while 1:
             if len(vCPUs) != 0:
                 vCPU = vCPUs[len(vCPUs) - 1][1]
                 print("Biggest remaining timeslice vCPU is %d" % vCPU)
-                os.sched_setaffinity(k.pid, {vCPU})
+                try:
+                    os.sched_setaffinity(k.pid, {vCPU})
+                except OSError:
+                    print ("Catch OSError: process %d might not be migrated" % k.pid)
                 affinity = os.sched_getaffinity(k.pid)
                 print('PID %d is migrated to CPU %s' % (k.pid, affinity))
             v.ns = 0
