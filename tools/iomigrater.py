@@ -123,6 +123,7 @@ def get_available_vCPUs():
                 vCPUs.append((vCPU_remaining_timeslice, i))
         else:
             sys.exit("Error: Cannot find %s file." % (is_vCPU_on_path))
+            return -1
     vCPUs.sort()
     return vCPUs
 
@@ -143,6 +144,11 @@ def do_migration(pid):
                     return -1
             else:
                 return 0
+        else:
+            return 0
+    else:
+	    return 0
+				
 
 # load BPF program
 b = BPF(text="""
@@ -313,8 +319,8 @@ while 1:
             print("%-6d %-16s %6.5f %d" % (k.pid, k.name, io_percent, v.ns))
             ret = do_migration(k.pid)
             if ret == 1:
-			    affinity = os.sched_getaffinity(pid)
-                print('PID %d is migrated to CPU %s' % (pid, affinity))
+			    affinity = os.sched_getaffinity(k.pid)
+                print('PID %d is migrated to CPU %s' % (k.pid, affinity))
             v.ns = 0
             io_percent = 0.0
 
