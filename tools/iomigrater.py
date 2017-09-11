@@ -86,8 +86,7 @@ def get_available_vCPUs():
         is_vCPU_on_path = host_dir + "vm1_is_vcpu%d_on" % i
         vCPU_curr_ts_path = host_dir + "vm1_vcpu%d_curr_ts" % i
         vCPU_prev_timeslice_path = host_dir + "vm1_vcpu%d_ts" % i
-        if os.path.exists(is_vCPU_on_path) and
-		os.path.exists(vCPU_curr_ts_path) and os.path.exists(vCPU_prev_timeslice_path):
+        if os.path.exists(is_vCPU_on_path) and os.path.exists(vCPU_curr_ts_path) and os.path.exists(vCPU_prev_timeslice_path):
             is_vCPU_on = ReadFile(is_vCPU_on_path)
             if int(is_vCPU_on) == 1:
                 vCPU_curr_ts = ReadFile(vCPU_curr_ts_path)
