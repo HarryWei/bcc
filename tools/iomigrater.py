@@ -84,7 +84,11 @@ def WriteFile(filepath, buf):
     f.close()
 
 def migration_check(pid):
-    affinity = os.sched_getaffinity(pid)
+    try:
+        affinity = os.sched_getaffinity(pid)
+    except ProcessLookupError:
+        print("Task %d might be finished (or not I/O intensive)" % pid)
+        return -1
     vcpu = affinity.pop()
     _vcpu = int(vcpu)
     print('Task %d is running on CPU %d' % (pid, _vcpu))
@@ -324,8 +328,11 @@ while 1:
             print("%-6d %-16s %6.5f %d" % (k.pid, task_name, io_percent, v.ns))
             ret = do_migration(k.pid)
             if ret == 1:
-                affinity = os.sched_getaffinity(k.pid)
-                print('PID %d is migrated to CPU %s' % (k.pid, affinity))
+                try:
+                    affinity = os.sched_getaffinity(pid)
+                    print('PID %d is migrated to CPU %s' % (k.pid, affinity))
+                except ProcessLookupError:
+                    print("Task %d might be finished (or not I/O intensive)" % pid)
             v.ns = 0
             io_percent = 0.0
 
