@@ -329,10 +329,10 @@ while 1:
             ret = do_migration(k.pid)
             if ret == 1:
                 try:
-                    affinity = os.sched_getaffinity(pid)
+                    affinity = os.sched_getaffinity(k.pid)
                     print('PID %d is migrated to CPU %s' % (k.pid, affinity))
                 except ProcessLookupError:
-                    print("Task %d might be finished (or not I/O intensive)" % pid)
+                    print("Task %d might be finished (or not I/O intensive)" % k.pid)
             v.ns = 0
             io_percent = 0.0
 
