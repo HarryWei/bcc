@@ -59,6 +59,9 @@ vCPU_num = 9
 vCPU_start = 2
 vCPU_end = 11
 filer1 = "kworker"
+filer2 = "mount"
+filer3 = "jbd"
+filer4 = "bash"
 
 # signal handler
 def signal_ignore(signal, frame):
@@ -84,7 +87,7 @@ def migration_check(pid):
     affinity = os.sched_getaffinity(pid)
     vcpu = affinity.pop()
     _vcpu = int(vcpu)
-    print('PID %d is running on CPU %d' % (pid, _vcpu))
+    print('Task %d is running on CPU %d' % (pid, _vcpu))
     is_vCPU_on_path = host_dir + "vm1_is_vcpu%d_on" % _vcpu
     vCPU_curr_ts_path = host_dir + "vm1_vcpu%d_curr_ts" % _vcpu
     vCPU_prev_timeslice_path = host_dir + "vm1_vcpu%d_ts" % _vcpu
@@ -317,8 +320,8 @@ while 1:
         #    v.bytes / 1024, avg_ms))
         io_percent = ((float(v.ns) / 1000.0)/100000.0)
         task_name = k.name.decode("utf-8")
-        if io_percent > 0.5 and k.pid != 0 and (task_name.find(filer1) == -1):
-            print("%-6d %-16s %6.5f %d" % (k.pid, k.name, io_percent, v.ns))
+        if io_percent > 0.5 and k.pid != 0 and (task_name.find(filer1) == -1) and (task_name.find(filer2) == -1) and (task_name.find(filer3) == -1) and (task_name.find(filer4) == -1):
+            print("%-6d %-16s %6.5f %d" % (k.pid, task_name, io_percent, v.ns))
             ret = do_migration(k.pid)
             if ret == 1:
                 affinity = os.sched_getaffinity(k.pid)
