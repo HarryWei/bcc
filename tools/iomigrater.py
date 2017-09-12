@@ -285,6 +285,12 @@ with open(diskstats) as stats:
         a = line.split()
         disklookup[a[0] + "," + a[1]] = a[2]
 
+#FIXME: pin IOMigrater to dedicated vCPU 1
+try:
+    os.sched_setaffinity(0, {1})
+except OSError:
+    print ("Catch OSError: Pin IOMigrater to dedicated vCPU Error!")
+
 # output
 exiting = 0
 while 1:
