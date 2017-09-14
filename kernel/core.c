@@ -100,6 +100,9 @@ EXPORT_SYMBOL_GPL(enable_vm1_flag);
 int enable_vm1_debug = 0;
 module_param(enable_vm1_debug, int, 0664);
 EXPORT_SYMBOL_GPL(enable_vm1_debug);
+int debug_vm1_vcpu = 0;
+module_param(debug_vm1_vcpu, int, 0664);
+EXPORT_SYMBOL_GPL(debug_vm1_vcpu);
 
 //vCPU PID in host OS
 int vm1_vcpu2_pid = 0;
@@ -3057,20 +3060,15 @@ need_resched:
 			}
 			
 #if 1
-			if ((enable_vm1_debug == 1) && (prev->pid == vm1_vcpu2_pid ||
-			prev->pid == vm1_vcpu3_pid || prev->pid == vm1_vcpu4_pid ||
-			prev->pid == vm1_vcpu5_pid || prev->pid == vm1_vcpu6_pid ||
-			prev->pid == vm1_vcpu7_pid || prev->pid == vm1_vcpu8_pid ||
-			prev->pid == vm1_vcpu9_pid || prev->pid == vm1_vcpu10_pid)) {
+			if ((enable_vm1_debug == 1) && (prev->pid == debug_vm1_vcpu)) {
 				printk(KERN_INFO "Current process id is %d\n", prev->pid);
 				printk(KERN_INFO "Next process id is %d\n", next->pid);
 				diff = prev->__end_ts - prev->__start_ts;
-				printk(KERN_INFO "%ld\n", diff);
+				printk(KERN_INFO "Timeslice: %ld\n", diff);
+				dump_stack();
 				if (diff < 2000) {
 					printk(KERN_INFO "------------------------------------------\n");
-					printk(KERN_INFO "Current process's start timestamp is %ld microseconds\n", prev->__start_ts);
-					printk(KERN_INFO "Current process's end timestamp is %ld microseconds\n", prev->__end_ts);
-					printk(KERN_INFO "Current process's timeslice is %ld micorseconds\n\n", diff);
+					printk(KERN_INFO "Timeslice is below 2000 microseconds so dump stack.\n");
 					dump_stack();
 					printk(KERN_INFO "------------------------------------------\n");
 				}
