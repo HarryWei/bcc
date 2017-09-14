@@ -151,6 +151,8 @@ static struct tio tio;
 static pthread_t pio;
 static struct register_task rt;
 static uint64_t cpu_sleep_counter = 0;
+int affinity = 0;
+int think_time = 0;
 
 key_t key = 99996;                                                      
 int shmid;                                                              
@@ -261,7 +263,7 @@ void set_nice_priority(int priority, int pid) {
 void do_iofunc(void) {
 	char buf[EACH_SIZE + 1];
 	uint64_t i = 0;
-	uint64_t j = 0;
+	int j = 0;
 	uint64_t start;
 	uint64_t start1;
 	uint64_t diff;
@@ -278,7 +280,6 @@ void do_iofunc(void) {
 
 	uint64_t _start;
 	uint64_t _diff;
-	int64_t think_time = 0;
 	//rt.pid = syscall(SYS_gettid);
 
 	//set_nice_priority(-20, rt.pid);
@@ -287,14 +288,15 @@ void do_iofunc(void) {
 	//XXX Must set since the I/O thread would be pinned to that vCPU.
 	//j = 0;
 	//set_priority();
-	set_pid_affinity(3, pid);
-	j = 2;
+	set_pid_affinity(affinity, pid);
+	j = 0;
 	io_vn = 0;
 	uint64_t _i = 0;
 
 	memset(buf, '\0', EACH_SIZE + 1);
 	io_vn = get_pid_affinity(pid);
 	printf("I/O thread on vCPU %lu\n", io_vn);
+	printf("think time counter is %d\n", think_time);
 	vn = io_vn;
 	uint64_t mcounter = 0;
 	uint64_t _mcounter = 0;
@@ -304,6 +306,11 @@ void do_iofunc(void) {
 			fprintf(stderr, "This read, %lu,  failed!\n", (uint64_t) EACH_SIZE);
 			exit(EXIT_SUCCESS);
 		}
+		/*XXX: Think_time is used since disk might be saturate*/
+		while (j != think_time) {
+			j += 1;
+		}
+		j = 0;
 		i = i + EACH_SIZE;
 		memset(buf, '\0', EACH_SIZE + 1);
 	}
@@ -336,6 +343,8 @@ int main(int argc, char **argv) {
 	_vcpu_num = vcpu_num;
 	int i = 0;
 
+	affinity = atoi(argv[1]);
+	think_time = atoi(argv[2]);
 	printf("vCPU number is %lu\n", _vcpu_num);
 	printf("Process ID number is %d\n", pid);
 	init_io_thread();
