@@ -63,6 +63,12 @@ filer2 = "mount"
 filer3 = "jbd"
 filer4 = "bash"
 
+# for do_migration_v2
+time_flag = 0
+vcpu_flag = 0
+prev_us = 0
+now_us = 0
+
 # signal handler
 def signal_ignore(signal, frame):
     print()
@@ -103,7 +109,7 @@ def migration_check(pid):
             vCPU_used_timeslice = int(guest_curr_ts) - int(vCPU_curr_ts)
             vCPU_prev_timeslice = ReadFile(vCPU_prev_timeslice_path)
             vCPU_remaining_timeslice = int(vCPU_prev_timeslice) - vCPU_used_timeslice
-            if vCPU_remaining_timeslice < 3:
+            if vCPU_remaining_timeslice < 2000:
                 return 1
             else:
                 return 0
@@ -135,7 +141,7 @@ def get_available_vCPUs():
     vCPUs.sort()
     return vCPUs
 
-def do_migration(pid):
+def do_migration_v1(pid):
     flag = migration_check(pid)
     if flag == 1:
         vCPUs = get_available_vCPUs()
@@ -143,7 +149,7 @@ def do_migration(pid):
             vCPU = vCPUs[len(vCPUs) - 1][1]
             vCPU_remaining_timeslice = vCPUs[len(vCPUs) - 1][0]
             print("Biggest remaining timeslice vCPU is %d, and remaining timeslice is %d" % (vCPU, vCPU_remaining_timeslice))
-            if vCPU_remaining_timeslice >= 9:
+            if vCPU_remaining_timeslice >= 3000:
                 try:
                     os.sched_setaffinity(pid, {vCPU})
                     return 1
@@ -156,6 +162,34 @@ def do_migration(pid):
             return 0
     else:
         return 0
+
+def do_migration_v2(pid):
+    if vcpu_flag == 0:
+        vCPUs = get_available_vCPUs()
+        vcpu_flag = 1
+        if len(vCPUs) != 0:
+            vCPU = vCPUs[len(vCPUs) - 1][1]
+            vCPU_remaining_timeslice = vCPUs[len(vCPUs) - 1][0]
+            print("Biggest remaining timeslice vCPU is %d, and remaining timeslice is %d" % (vCPU, vCPU_remaining_timeslice))
+            try:
+                os.sched_setaffinity(pid, {vCPU})
+                return 1
+            except OSError:
+                print ("Catch OSError: process %d might not be migrated" % pid)
+                return -1
+    if time_flag == 0:
+        prev = time.monotonic()
+        prev_us = int(now * pow(10, 6))
+        time_flag = 1
+    else:
+        now = time.monotonic()
+        now_us = int(now * pow(10, 6))
+        diff_us = now_us - prev_us
+        prev_us = now_us
+    if (vCPU_remaining_timeslice - diff_us) <= 2000:
+        vcpu_flag = 1
+
+    return 0
 				
 
 # load BPF program
@@ -332,7 +366,7 @@ while 1:
         task_name = k.name.decode("utf-8")
         if io_percent > 0.5 and k.pid != 0 and (task_name.find(filer1) == -1) and (task_name.find(filer2) == -1) and (task_name.find(filer3) == -1) and (task_name.find(filer4) == -1):
             print("%-6d %-16s %6.5f %d" % (k.pid, task_name, io_percent, v.ns))
-            ret = do_migration(k.pid)
+            ret = do_migration_v1(k.pid)
             if ret == 1:
                 try:
                     affinity = os.sched_getaffinity(k.pid)
