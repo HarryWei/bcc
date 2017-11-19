@@ -1,17 +1,7 @@
 #!/bin/bash
 
-#sequential read
-./bin/flush
-./bin/seq_read
-./bin/flush
-./bin/seq_read
-./bin/flush
-./bin/seq_read
+#clean up
 
-#random read
+./umount.sh
 ./bin/flush
-./bin/ran_read
-./bin/flush
-./bin/ran_read
-./bin/flush
-./bin/ran_read
+#./mount.sh

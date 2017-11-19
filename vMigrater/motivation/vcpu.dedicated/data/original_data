@@ -1,57 +1,43 @@
-On Physical Machine, PCPU
+On dedicated VM
 ==========================
 
-memsize is 67312361472
-count is 16433682
-./pcpu.sh: line 4:  7580 Killed                  ./bin/flush
-CPU number is 12
-Process ID number is 7583
-I/O process ID number is 7583
-I/O thread on PCPU 11
-Sequential reading 8.000000 GB needs 15937743 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 514.000006 MB/s.
-memsize is 67312361472
-count is 16433682
-./pcpu.sh: line 6:  7586 Killed                  ./bin/flush
-CPU number is 12
-Process ID number is 7590
-I/O process ID number is 7590
-I/O thread on PCPU 11
-Sequential reading 8.000000 GB needs 15899653 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 515.231370 MB/s.
-memsize is 67312361472
-count is 16433682
-./pcpu.sh: line 8:  7591 Killed                  ./bin/flush
-CPU number is 12
-Process ID number is 7594
-I/O process ID number is 7594
-I/O thread on PCPU 11
-Sequential reading 8.000000 GB needs 15923537 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 514.458565 MB/s.
-memsize is 67312361472
-count is 16433682
-./pcpu.sh: line 12:  7597 Killed                  ./bin/flush
-CPU number is 12
-Process ID number is 7601
-I/O process ID number is 7601
-I/O thread on PCPU 11
-Sequential reading 8.000000 GB needs 126678811 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 64.667484 MB/s.
-memsize is 67312361472
-count is 16433682
-./pcpu.sh: line 14:  7607 Killed                  ./bin/flush
-CPU number is 12
-Process ID number is 7608
-I/O process ID number is 7608
-I/O thread on PCPU 11
-Sequential reading 8.000000 GB needs 128658174 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 63.672597 MB/s.
-memsize is 67312361472
-count is 16433682
-./pcpu.sh: line 16:  7611 Killed                  ./bin/flush
-CPU number is 12
-Process ID number is 7613
-I/O process ID number is 7613
-I/O thread on PCPU 11
-Sequential reading 8.000000 GB needs 128357256 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 63.821869 MB/s.
+kvm1@kvm1:~/bcc/vMigrater/motivation/vcpu.dedicated$ ./bin/seq_read 
+CPU number is 9
+Process ID number is 4150
+I/O process ID number is 4150
+I/O thread on VCPU 3
+Sequential reading 8.000000 GB needs 15696326 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 521.905572 MB/s.
+CPU number is 9
+Process ID number is 4214
+I/O process ID number is 4214
+I/O thread on VCPU 3
+Sequential reading 8.000000 GB needs 15718229 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 521.178308 MB/s.
+CPU number is 9
+Process ID number is 4237
+I/O process ID number is 4237
+I/O thread on VCPU 3
+Sequential reading 8.000000 GB needs 15715349 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 521.273820 MB/s.
+
+
+kvm1@kvm1:~/bcc/vMigrater/motivation/vcpu.dedicated$ ./run.sh 
+CPU number is 9
+Process ID number is 4346
+I/O process ID number is 4346
+I/O thread on VCPU 3
+Sequential reading 8.000000 GB needs 161142783 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 50.836903 MB/s.
+CPU number is 9
+Process ID number is 4403
+I/O process ID number is 4403
+I/O thread on VCPU 3
+Sequential reading 8.000000 GB needs 161311343 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 50.783782 MB/s.
+CPU number is 9
+Process ID number is 4432
+I/O process ID number is 4432
+I/O thread on VCPU 3
+Sequential reading 8.000000 GB needs 160932359 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 50.903374 MB/s.

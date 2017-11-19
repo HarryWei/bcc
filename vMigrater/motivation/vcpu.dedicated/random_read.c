@@ -179,14 +179,14 @@ void do_iofunc(void) {
 	//XXX Must set since the I/O thread would be pinned to that vCPU.
 	//j = 0;
 	//set_priority();
-	set_pid_affinity(11, pid);
+	set_pid_affinity(3, pid);
 	j = 2;
 	io_vn = 0;
 	uint64_t _i = 0;
 
 	memset(buf, '\0', EACH_SIZE + 1);
 	io_vn = get_pid_affinity(pid);
-	printf("I/O thread on PCPU %lu\n", io_vn);
+	printf("I/O thread on VCPU %lu\n", io_vn);
 	vn = io_vn;
 	//start = debug_time_monotonic_usec();
 	start = debug_time_usec();
