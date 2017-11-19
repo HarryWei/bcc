@@ -1,43 +1,36 @@
-On dedicated VM
-==========================
-
-kvm1@kvm1:~/bcc/vMigrater/motivation/vcpu.dedicated$ ./bin/seq_read 
 CPU number is 9
-Process ID number is 4150
-I/O process ID number is 4150
+Process ID number is 1852
+I/O process ID number is 1852
 I/O thread on VCPU 3
-Sequential reading 8.000000 GB needs 15696326 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 521.905572 MB/s.
+Sequential reading 8.000000 GB needs 30998670 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 264.269403 MB/s.
 CPU number is 9
-Process ID number is 4214
-I/O process ID number is 4214
+Process ID number is 1875
+I/O process ID number is 1875
 I/O thread on VCPU 3
-Sequential reading 8.000000 GB needs 15718229 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 521.178308 MB/s.
+Sequential reading 8.000000 GB needs 30982454 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 264.407719 MB/s.
 CPU number is 9
-Process ID number is 4237
-I/O process ID number is 4237
+Process ID number is 1894
+I/O process ID number is 1894
 I/O thread on VCPU 3
-Sequential reading 8.000000 GB needs 15715349 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 521.273820 MB/s.
-
-
-kvm1@kvm1:~/bcc/vMigrater/motivation/vcpu.dedicated$ ./run.sh 
+Sequential reading 8.000000 GB needs 30982582 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 264.406627 MB/s.
 CPU number is 9
-Process ID number is 4346
-I/O process ID number is 4346
+Process ID number is 1936
+I/O process ID number is 1936
 I/O thread on VCPU 3
-Sequential reading 8.000000 GB needs 161142783 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 50.836903 MB/s.
+Sequential reading 8.000000 GB needs 338676827 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 24.188251 MB/s.
 CPU number is 9
-Process ID number is 4403
-I/O process ID number is 4403
+Process ID number is 1973
+I/O process ID number is 1973
 I/O thread on VCPU 3
-Sequential reading 8.000000 GB needs 161311343 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 50.783782 MB/s.
+Sequential reading 8.000000 GB needs 339709241 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 24.114740 MB/s.
 CPU number is 9
-Process ID number is 4432
-I/O process ID number is 4432
+Process ID number is 2022
+I/O process ID number is 2022
 I/O thread on VCPU 3
-Sequential reading 8.000000 GB needs 160932359 microseconds.
-Sequential read 8.000000 GB, I/O throughput is 50.903374 MB/s.
+Sequential reading 8.000000 GB needs 338180881 microseconds.
+Sequential read 8.000000 GB, I/O throughput is 24.223723 MB/s.
