@@ -36,8 +36,8 @@
 #include <sys/ipc.h> 
 #include <sys/shm.h>
 
-#define FNA				"/home/wwjia/tmp/testA"
-#define FNB				"/var/testB"
+#define FNA				"/home/kvm1/sda2/testA"
+#define FNB				"/home/kvm1/sda3/testB"
 #define EACH_SIZE		(1ULL<<12ULL)
 #define F_SIZE			(1ULL<<33ULL)
 
