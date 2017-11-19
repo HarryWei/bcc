@@ -215,9 +215,9 @@ void do_iofunc(void) {
 		memset(buf, '\0', EACH_SIZE + 1);
 	}
 	diff = debug_time_usec() - start;
-	printf("Sequential reading %lf GB needs %lu microseconds.\n", ((double) F_SIZE / (double) (1024.0 * 1024.0 * 1024.0)), diff);
+	printf("Random reading %lf GB needs %lu microseconds.\n", ((double) F_SIZE / (double) (1024.0 * 1024.0 * 1024.0)), diff);
 //	printf("With migration, I/O throughput is %lf MB/s.\n", ((double) F_SIZE / (double) (1024.0 * 1024.0) )  / ((double) diff / (double) 1000000.0));
-	printf("Sequential read %lf GB, I/O throughput is %lf MB/s.\n", ((double) F_SIZE / (double) (1024.0 * 1024.0 * 1024.0)), (((double) F_SIZE / (double) (1024.0 * 1024.0))  / ((double) diff / (double) 1000000.0)));
+	printf("Random read %lf GB, I/O throughput is %lf MB/s.\n", ((double) F_SIZE / (double) (1024.0 * 1024.0 * 1024.0)), (((double) F_SIZE / (double) (1024.0 * 1024.0))  / ((double) diff / (double) 1000000.0)));
 }
 
 void init_io_process(void) {
