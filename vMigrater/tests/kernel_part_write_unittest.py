@@ -28,7 +28,7 @@ import json
 
 # IOMigrater constants
 host_dir = "/sys/module/core/parameters/"
-vCPU_Sorted_RTS = "sorted"
+vCPU_Sorted_RTS = "/home/wwjia/workshop/bcc/vMigrater/shared/sorted"
 vCPU_num = 9
 vCPU_start = 1
 vCPU_end = 9
