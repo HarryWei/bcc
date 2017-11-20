@@ -95,11 +95,11 @@ def get_available_vCPUs():
             if int(is_vCPU_on) == 1:
                 vCPU_curr_ts = ReadFile(vCPU_curr_ts_path)
                 guest_curr_ts = time.time() * pow(10, 6)
-                #print("%s: timestamp is %d" % (vCPU_curr_ts_path, int(vCPU_curr_ts)))
-                #print("Guest current timestamp is %d" % int(guest_curr_ts))
-                vCPU_used_timeslice = guest_curr_ts - float(vCPU_curr_ts)
+                print("%s: timestamp is %d" % (vCPU_curr_ts_path, int(vCPU_curr_ts)))
+                print("Guest current timestamp is %d" % int(guest_curr_ts))
+                vCPU_used_timeslice = int(guest_curr_ts) - int(vCPU_curr_ts)
                 vCPU_prev_timeslice = ReadFile(vCPU_prev_timeslice_path)
-                vCPU_remaining_timeslice = float(vCPU_prev_timeslice) - vCPU_used_timeslice
+                vCPU_remaining_timeslice = int(vCPU_prev_timeslice) - vCPU_used_timeslice
                 vCPUs.append((vCPU_remaining_timeslice, i))
         else:
             sys.exit("Error: Cannot find %s file." % (is_vCPU_on_path))
