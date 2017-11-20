@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # iomigrater - create based on iofilter
 # @lint-avoid-python-3-compatibility-imports
 #
@@ -22,11 +22,13 @@ import signal
 import os
 import sys
 import time
+import json
 #from subprocess import call
 
 
 # IOMigrater constants
-host_dir = "/mnt/"
+host_dir = "/sys/module/core/parameters/"
+vCPU_Sorted_RTS = "sorted"
 vCPU_num = 9
 vCPU_start = 1
 vCPU_end = 9
@@ -83,30 +85,6 @@ def migration_check(pid):
         sys.exit("Error: Cannot find %s file." % (is_vCPU_on_path))
         return -1
 
-# timestamp is in microseconds.
-def get_available_vCPUs():
-    vCPUs = []
-    for i in range(vCPU_start, vCPU_end):
-        is_vCPU_on_path = host_dir + "vm1_is_vcpu%d_on" % i
-        vCPU_curr_ts_path = host_dir + "vm1_vcpu%d_curr_ts" % i
-        vCPU_prev_timeslice_path = host_dir + "vm1_vcpu%d_ts" % i
-        if os.path.exists(is_vCPU_on_path) and os.path.exists(vCPU_curr_ts_path) and os.path.exists(vCPU_prev_timeslice_path):
-            is_vCPU_on = ReadFile(is_vCPU_on_path)
-            if int(is_vCPU_on) == 1:
-                vCPU_curr_ts = ReadFile(vCPU_curr_ts_path)
-                guest_curr_ts = time.time() * pow(10, 6)
-                print("%s: timestamp is %d" % (vCPU_curr_ts_path, int(vCPU_curr_ts)))
-                print("Guest current timestamp is %d" % int(guest_curr_ts))
-                vCPU_used_timeslice = int(guest_curr_ts) - int(vCPU_curr_ts)
-                vCPU_prev_timeslice = ReadFile(vCPU_prev_timeslice_path)
-                vCPU_remaining_timeslice = int(vCPU_prev_timeslice) - vCPU_used_timeslice
-                vCPUs.append((vCPU_remaining_timeslice, i))
-        else:
-            sys.exit("Error: Cannot find %s file." % (is_vCPU_on_path))
-            return -1
-    vCPUs.sort()
-    return vCPUs
-
 def do_migration_v1(pid):
     flag = migration_check(pid)
     if flag == 1:
@@ -160,16 +138,41 @@ def do_migration_v2(pid):
 
 #print('Tracing... Output every %d secs. Hit Ctrl-C to end' % interval)
 print('vMigrater: VMM Kernel part unittest...')
-vCPUs = get_available_vCPUs()
-print(vCPUs)
-#exiting=0
-#while 1:
-#    try:
-#        sleep(3.0/1000.0)
-#    except KeyboardInterrupt:
-#        exiting = 1
-#    vCPUs = get_available_vCPUs()
-#    print(vCPUs)
-#    if exiting:
-#        print("Exiting...")
-#        exit()
+#Set VMM userspace daemon to dedicated PCPU
+pid=os.getpid()
+os.sched_setaffinity(pid, {11})
+#vCPUs = get_available_vCPUs()
+#print(vCPUs)
+exiting=0
+while 1:
+    try:
+        sleep(3.0/1000.0)
+    except KeyboardInterrupt:
+        exiting = 1
+# timestamp is in microseconds.
+    vCPUs = []
+    for i in range(vCPU_start, vCPU_end):
+        is_vCPU_on_path = host_dir + "vm1_is_vcpu%d_on" % i
+        vCPU_curr_ts_path = host_dir + "vm1_vcpu%d_curr_ts" % i
+        vCPU_prev_timeslice_path = host_dir + "vm1_vcpu%d_ts" % i
+        if os.path.exists(is_vCPU_on_path) and os.path.exists(vCPU_curr_ts_path) and os.path.exists(vCPU_prev_timeslice_path):
+            is_vCPU_on = ReadFile(is_vCPU_on_path)
+            if int(is_vCPU_on) == 1:
+                vCPU_curr_ts = ReadFile(vCPU_curr_ts_path)
+                guest_curr_ts = time.time() * pow(10, 6)
+                #print("%s: schedule timestamp is %d" % (vCPU_curr_ts_path, int(vCPU_curr_ts)))
+                #print("Current timestamp is %d" % int(guest_curr_ts))
+                vCPU_used_timeslice = int(guest_curr_ts) - int(vCPU_curr_ts)
+                vCPU_prev_timeslice = ReadFile(vCPU_prev_timeslice_path)
+                vCPU_remaining_timeslice = int(vCPU_prev_timeslice) - vCPU_used_timeslice
+                vCPUs.append((vCPU_remaining_timeslice, i))
+        else:
+            sys.exit("Error: Cannot find %s file." % (is_vCPU_on_path))
+    vCPUs.sort()
+    vCPUs.reverse()
+    with open(vCPU_Sorted_RTS, 'w') as outfile:
+        json.dump(vCPUs, outfile)
+    #print(vCPUs)
+    if exiting:
+        print("Exiting...")
+        exit()
