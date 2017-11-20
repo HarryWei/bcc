@@ -1,3 +1,6 @@
 This is the Kernel directory for IOMigrater.
 
+sched.h under /usr/src/linux-3.16.39/include/linux
+core.c under /usr/src/linux-3.16.39/kernel/sched
+
 Kernel Version: 3.16.39
