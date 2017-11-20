@@ -28,7 +28,7 @@ import json
 
 # IOMigrater constants
 host_dir = "/sys/module/core/parameters/"
-vCPU_Sorted_RTS = "/home/wwjia/workshop/bcc/vMigrater/shared/sorted"
+vCPU_Sorted_RTS = "/mnt/sorted"
 vCPU_num = 9
 vCPU_start = 1
 vCPU_end = 9
@@ -140,7 +140,7 @@ def do_migration_v2(pid):
 print('vMigrater: VMM Kernel part unittest...')
 #Set VMM userspace daemon to dedicated PCPU
 pid=os.getpid()
-os.sched_setaffinity(pid, {11})
+os.sched_setaffinity(pid, {0})
 #vCPUs = get_available_vCPUs()
 #print(vCPUs)
 exiting=0
