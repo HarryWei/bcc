@@ -280,6 +280,7 @@ void *_thread_func(void *arg) {
 	int pid = syscall(SYS_gettid);
 	printf("CPU daemon worker thread PID number is %d\n", pid);
 	set_idle_priority();
+	set_nice_priority(20, pid);
 
 	while(1) {
 		_vcpu[vn].plus_one += 1;
