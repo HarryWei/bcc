@@ -42,6 +42,7 @@ except ProcessLookupError:
 vcpu = affinity.pop()
 _vcpu = int(vcpu)
 flag=0
+#vCPUs=[]
 while 1:
     with open(vCPU_Sorted_RTS, 'r') as infile:
         try:
@@ -58,6 +59,9 @@ while 1:
     #vcpu = affinity.pop()
     #_vcpu = int(vcpu)
     #print("I/O Thread is running on vCPU %d, flag is %d" % (_vcpu, flag))
+    #for i in vCPUs:
+    #    print(i)
+    #    print(vCPUs[0][1])
     #print(vCPUs)
     for i in vCPUs:
         if int(i[1]) == _vcpu:

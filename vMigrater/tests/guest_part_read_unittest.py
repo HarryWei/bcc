@@ -140,7 +140,7 @@ def do_migration_v2(pid):
 print('vMigrater: VMM Kernel part unittest...')
 #Set VMM userspace daemon to dedicated PCPU
 pid=os.getpid()
-os.sched_setaffinity(pid, {0})
+os.sched_setaffinity(pid, {1})
 #vCPUs = get_available_vCPUs()
 #print(vCPUs)
 exiting=0
@@ -151,28 +151,28 @@ while 1:
         exiting = 1
 # timestamp is in microseconds.
     #vCPUs = []
-    prev=int(time.time() * pow(10,6))
+    #prev=int(time.time() * pow(10,6))
     with open(vCPU_Sorted_RTS, 'r') as infile:
         try:
             vCPUs = json.load(infile)
         except ValueError:
             pass
-    _now=int(time.time() * pow(10,6))
-    print("load file cost is %d us" % (_now - prev))
-    prev=int(time.time() * pow(10,6))
+    #_now=int(time.time() * pow(10,6))
+    #print("load file cost is %d us" % (_now - prev))
+    #prev=int(time.time() * pow(10,6))
     os.sched_setaffinity(pid, {1})
-    _now=int(time.time() * pow(10,6))
-    print("set affinity cost is %d us" % (_now - prev))
-    prev=int(time.time() * pow(10,6))
-    try:
-        affinity = os.sched_getaffinity(pid)
-    except ProcessLookupError:
-        print("Task %d might be finished (or not I/O intensive)" % pid)
-    vcpu = affinity.pop()
-    _vcpu = int(vcpu)
-    _now=int(time.time() * pow(10,6))
-    print("get affinity cost is %d us" % (_now - prev))
-    #print(vCPUs)
+    #_now=int(time.time() * pow(10,6))
+    #print("set affinity cost is %d us" % (_now - prev))
+    #prev=int(time.time() * pow(10,6))
+    #try:
+    #    affinity = os.sched_getaffinity(pid)
+    #except ProcessLookupError:
+    #    print("Task %d might be finished (or not I/O intensive)" % pid)
+    #vcpu = affinity.pop()
+    #_vcpu = int(vcpu)
+    #_now=int(time.time() * pow(10,6))
+    #print("get affinity cost is %d us" % (_now - prev))
+    print(vCPUs)
     #print("There are %d available vCPUs running!" % len(vCPUs))
     #for i in vCPUs:
         #print("vCPU %d has remaining %d us" % (int(i[1]), int(i[0])))

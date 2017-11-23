@@ -170,15 +170,15 @@ void do_iofunc(void) {
 	uint64_t _start;
 	uint64_t _diff;
 	int64_t think_time = 0;
-	//rt.pid = syscall(SYS_gettid);
+	//_pid = syscall(SYS_gettid);
 
-	//set_nice_priority(-20, rt.pid);
+	//set_nice_priority(-20, pid);
 	printf("I/O process ID number is %d\n", pid);
 
 	//XXX Must set since the I/O thread would be pinned to that vCPU.
 	//j = 0;
 	//set_priority();
-	set_pid_affinity(3, pid);
+	set_pid_affinity(5, pid);
 	j = 2;
 	io_vn = 0;
 	uint64_t _i = 0;

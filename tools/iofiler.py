@@ -310,7 +310,7 @@ b.attach_kprobe(event="blk_account_io_completion",
     fn_name="trace_req_completion")
 
 #print('Tracing... Output every %d secs. Hit Ctrl-C to end' % interval)
-print('Tracing... Output every 100 milliseconds. Hit Ctrl-C to end')
+print('Tracing... Output every 10 milliseconds. Hit Ctrl-C to end')
 
 # cache disk major,minor -> diskname
 disklookup = {}
@@ -319,7 +319,7 @@ with open(diskstats) as stats:
         a = line.split()
         disklookup[a[0] + "," + a[1]] = a[2]
 
-#FIXME: pin IOMigrater to dedicated vCPU 1
+#FIXME: pin iofiler to dedicated vCPU 1
 try:
     os.sched_setaffinity(0, {1})
 except OSError:
@@ -329,7 +329,7 @@ except OSError:
 exiting = 0
 while 1:
     try:
-        sleep(100.0/1000.0)
+        sleep(10.0/1000.0)
     except KeyboardInterrupt:
         exiting = 1
 
@@ -364,15 +364,15 @@ while 1:
         #    v.bytes / 1024, avg_ms))
         io_percent = ((float(v.ns) / 1000.0)/100000.0)
         task_name = k.name.decode("utf-8")
-        if io_percent > 0.5 and k.pid != 0 and (task_name.find(filer1) == -1) and (task_name.find(filer2) == -1) and (task_name.find(filer3) == -1) and (task_name.find(filer4) == -1):
+        if io_percent > 0.1 and k.pid != 0 and (task_name.find(filer1) == -1) and (task_name.find(filer2) == -1) and (task_name.find(filer3) == -1) and (task_name.find(filer4) == -1):
             print("%-6d %-16s %6.5f %d" % (k.pid, task_name, io_percent, v.ns))
-            ret = do_migration_v1(k.pid)
+            """ret = do_migration_v1(k.pid)
             if ret == 1:
                 try:
                     affinity = os.sched_getaffinity(k.pid)
                     print('PID %d is migrated to CPU %s' % (k.pid, affinity))
                 except ProcessLookupError:
-                    print("Task %d might be finished (or not I/O intensive)" % k.pid)
+                    print("Task %d might be finished (or not I/O intensive)" % k.pid)"""
             v.ns = 0
             io_percent = 0.0
 
