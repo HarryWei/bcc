@@ -10,9 +10,9 @@ import sys
 
 src = "/sys/fs/cgroup/cpuset/machine/kvm1.libvirt-qemu/"
 des = "/sys/module/core/parameters/"
-vCPU_num = 9
-vCPU_start = 1
-vCPU_end = 9
+vCPU_num = 6
+vCPU_start = 2
+vCPU_end = 8
 
 def ReadFile(filepath):
   f = open(filepath, "r")
