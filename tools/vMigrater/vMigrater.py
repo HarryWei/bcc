@@ -310,7 +310,7 @@ b.attach_kprobe(event="blk_account_io_completion",
     fn_name="trace_req_completion")
 
 #print('Tracing... Output every %d secs. Hit Ctrl-C to end' % interval)
-print('Tracing... Output every 100 milliseconds. Hit Ctrl-C to end')
+print('Tracing... Output every 20 microseconds. Hit Ctrl-C to end')
 
 # cache disk major,minor -> diskname
 disklookup = {}
@@ -329,7 +329,7 @@ except OSError:
 exiting = 0
 while 1:
     try:
-        sleep(100.0/1000.0)
+        sleep(2.0/100000.0)
     except KeyboardInterrupt:
         exiting = 1
 
@@ -345,43 +345,51 @@ while 1:
     #print("%-6s %-16s %6s" % ("PID", "COMM", "IO"))
 
     # by-PID output
-    counts = b.get_table("counts")
-    line = 0
-    for k, v in reversed(sorted(counts.items(),
-                                key=lambda counts: counts[1].bytes)):
-
+    try:
+        counts = b.get_table("counts")
+        line = 0
+        for k, v in reversed(sorted(counts.items(), key=lambda counts: counts[1].bytes)):
         # lookup disk
-        disk = str(k.major) + "," + str(k.minor)
-        if disk in disklookup:
-            diskname = disklookup[disk]
-        else:
-            diskname = "?"
+            disk = str(k.major) + "," + str(k.minor)
+            if disk in disklookup:
+                diskname = disklookup[disk]
+            else:
+                diskname = "?"
 
         # print line
         #avg_ms = (float(v.us) / 1000) / v.io
         #print("%-6d %-16s %1s %-3d %-3d %-8s %5s %7s %6.2f" % (k.pid, k.name,
         #    "W" if k.rwflag else "R", k.major, k.minor, diskname, v.io,
         #    v.bytes / 1024, avg_ms))
-        io_percent = ((float(v.ns) / 1000.0)/100000.0)
-        task_name = k.name.decode("utf-8")
-        if io_percent > 0.5 and k.pid != 0 and (task_name.find(filer1) == -1) and (task_name.find(filer2) == -1) and (task_name.find(filer3) == -1) and (task_name.find(filer4) == -1):
-            print("%-6d %-16s %6.5f %d" % (k.pid, task_name, io_percent, v.ns))
-            """ret = do_migration_v1(k.pid)
-            if ret == 1:
-                try:
-                    affinity = os.sched_getaffinity(k.pid)
-                    print('PID %d is migrated to CPU %s' % (k.pid, affinity))
-                except ProcessLookupError:
-                    print("Task %d might be finished (or not I/O intensive)" % k.pid)"""
-            v.ns = 0
-            io_percent = 0.0
+            io_percent = ((float(v.ns) / 1000.0)/100000.0)
+            task_name = k.name.decode("utf-8")
+            if io_percent > 0.1 and k.pid != 0 and (task_name.find(filer1) == -1) and (task_name.find(filer2) == -1) and (task_name.find(filer3) == -1) and (task_name.find(filer4) == -1):
+            #try:
+            #    affinity = os.sched_getaffinity(k.pid)
+            #    print('PID %d is migrated to CPU %s' % (k.pid, affinity))
+            #except ProcessLookupError:
+            #    print("Task %d might be finished (or not I/O intensive)" % k.pid)
+            #affinity = os.sched_getaffinity(k.pid)
+            #print('PID %d is migrated to CPU %s' % (k.pid, affinity))
+                print("%-6d %-16s %6.5f %d" % (k.pid, task_name, io_percent, v.ns))
+                """ret = do_migration_v1(k.pid)
+                if ret == 1:
+                    try:
+                        affinity = os.sched_getaffinity(k.pid)
+                        print('PID %d is migrated to CPU %s' % (k.pid, affinity))
+                    except ProcessLookupError:
+                        print("Task %d might be finished (or not I/O intensive)" % k.pid)"""
+                v.ns = 0
+                io_percent = 0.0
 
-        line += 1
-        if line >= maxrows:
-            break
-    counts.clear()
+            line += 1
+            if line >= maxrows:
+                break
+        counts.clear()
 
-    countdown -= 1
-    if exiting or countdown == 0:
-        print("Detaching...")
-        exit()
+        countdown -= 1
+        if exiting or countdown == 0:
+            print("Detaching...")
+            exit()
+    except (MemoryError,KeyboardInterrupt,OSError) as e:
+        pass
