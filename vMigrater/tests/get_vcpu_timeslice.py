@@ -43,6 +43,7 @@ def ReadFile(filepath):
     return contents
 
 print('vMigrater: VMM Kernel part unittest...')
+vcpu_file= "vm1_vcpu" + str(sys.argv[1]) + "_ts"
 #Set VMM userspace daemon to dedicated PCPU
 pid=os.getpid()
 os.sched_setaffinity(pid, {10})
@@ -56,7 +57,7 @@ while 1:
         exiting = 1
 # timestamp is in microseconds.
     #prev=int(time.time() * pow(10,6))
-    vcpu1_ts_path = host_dir + "vm1_vcpu5_ts"
+    vcpu1_ts_path = host_dir + vcpu_file
     vCPU_prev_timeslice = ReadFile(vcpu1_ts_path)
     sys.stdout.write(vCPU_prev_timeslice)
     count = count + 1

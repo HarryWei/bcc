@@ -8,7 +8,7 @@
 import os
 import sys
 
-src = "/sys/fs/cgroup/cpuset/machine/kvm1.libvirt-qemu/"
+src = "/sys/fs/cgroup/cpuset/machine/" + str(sys.argv[1]) + ".libvirt-qemu/"
 des = "/sys/module/core/parameters/"
 vCPU_num = 6
 vCPU_start = 2
@@ -29,7 +29,8 @@ def WriteFile(filepath, buf):
     f.write(buf)
   finally:
     f.close()
-  
+
+print("Virtual Machine Path is: %s" % src)
 for i in range(vCPU_start, vCPU_end):
   print("This is vCPU %d" % i)
   new_src = src + "vcpu%d/tasks" % i
